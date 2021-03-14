@@ -61,19 +61,16 @@ class ChronoModel(models.Model):
 
 class Org(ChronoModel):
     name = models.CharField(name="name", max_length=200)
-    superior_outside_positions = models.ManyToManyField("Position",
-                                                        blank=True,
-                                                        null=True)
-    predecessor_orgs = models.ManyToManyField("self", blank=True, null=True)
+    predecessor_orgs = models.ManyToManyField("self")
 
     def __str__(self):
         return self.name
 
 
 class Person(models.Model):
-    first_name = models.CharField()
-    second_name = models.CharField()
-    middle_name = models.CharField(blank=True, null=True)
+    first_name = models.CharField(max_length=200)
+    second_name = models.CharField(max_length=200)
+    middle_name = models.CharField(max_length=200, blank=True, null=True)
     additional_info = models.TextField(blank=True, null=True)
 
     birth_year = models.IntegerField(
@@ -133,24 +130,32 @@ class Employment(models.Model):
 
 
 class OrgsHierarchyRel(ChronoModel):
-    superior_org = models.ForeignKey(Org)
-    subordinate_org = models.ForeignKey(Org)
+    superior_org = models.ForeignKey(Org,
+                                     on_delete=models.CASCADE,
+                                     related_name="superior_org")
+    subordinate_org = models.ForeignKey(Org,
+                                        on_delete=models.CASCADE,
+                                        related_name="subordinate_org")
 
     def __str__(self):
         return self.superior_org + " supervises " + self.subordinate_org
 
 
 class OrgsStructuralRel(ChronoModel):
-    external_org = models.ForeignKey(Org)
-    internal_org = models.ForeignKey(Org)
+    external_org = models.ForeignKey(Org,
+                                     on_delete=models.CASCADE,
+                                     related_name="external_org")
+    internal_org = models.ForeignKey(Org,
+                                     on_delete=models.CASCADE,
+                                     related_name="internal_org")
 
     def __str__(self):
         return self.internal_org + " part of " + self.external_org
 
 
 class PositionOrgHierarchyRel(ChronoModel):
-    superior_position = models.ForeignKey(Position)
-    subordinate_org = models.ForeignKey(Org)
+    superior_position = models.ForeignKey(Position, on_delete=models.CASCADE)
+    subordinate_org = models.ForeignKey(Org, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.superior_position + " supervises " + self.subordinate_org

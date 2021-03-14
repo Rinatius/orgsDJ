@@ -18,7 +18,6 @@ from django.contrib import admin
 import Orgs.views as orgs_app
 
 urlpatterns = [
-    path(r'', admin.site.urls),
     path(r'admin/', admin.site.urls),
     path(r'orgs/', orgs_app.AllOrgs.as_view()),
     re_path(r'org/(?P<pk>\d+)', orgs_app.OrgView.as_view()),
