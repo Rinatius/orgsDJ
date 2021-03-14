@@ -161,5 +161,25 @@ class PositionOrgHierarchyRel(ChronoModel):
         return self.superior_position + " supervises " + self.subordinate_org
 
 
+class PositionsHierarchyRel(ChronoModel):
+    superior_position = models.ForeignKey(Position,
+                                          on_delete=models.CASCADE,
+                                          related_name="superior_position")
+    subordinate_position = models.ForeignKey(Position,
+                                             on_delete=models.CASCADE,
+                                             related_name="subordinate_position")
+
+    def __str__(self):
+        return self.superior_position + \
+               " supervises " + \
+               self.subordinate_position
+
+
+class OrgPositionHierarchyRel(ChronoModel):
+    superior_org = models.ForeignKey(Org, on_delete=models.CASCADE)
+    subordinate_position = models.ForeignKey(Position, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.superior_org + " supervises " + self.subordinate_position
 
 

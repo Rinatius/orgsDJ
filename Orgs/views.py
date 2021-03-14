@@ -2,9 +2,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.generics import ListAPIView
-from .models import Org, Person, Position, PositionName, Employment
-from .serializer import OrgSerializer, PersonSerializer, PositionSerializer, PositionNameSerializer, \
-    EmploymentSerializer
+from .models import Org, Person, Position, PositionName, \
+    Employment, OrgsHierarchyRel, OrgsStructuralRel, PositionOrgHierarchyRel, OrgPositionHierarchyRel, \
+    PositionsHierarchyRel
+from .serializer import OrgSerializer, PersonSerializer, PositionSerializer, \
+    PositionNameSerializer, EmploymentSerializer, OrgsHierarchyRelSerializer, OrgsStructuralRelSerializer, \
+    PositionOrgHierarchyRelSerializer, OrgPositionHierarchyRelSerializer, PositionsHierarchyRelSerializer
 
 
 # Create your views here.
@@ -152,4 +155,149 @@ class EmploymentView(APIView):
     def delete(self, request, pk, format=None):
         org = Employment.objects.get(pk=pk)
         org.delete()
+        return Response(status=status.HTTP_200_OK)
+
+
+class AllOrgsHierarchyRels(ListAPIView):
+
+    queryset = OrgsHierarchyRel.objects.all()
+    serializer_class = OrgsHierarchyRelSerializer
+
+    def post(self, request, format=None):
+        serializer = OrgsHierarchyRelSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class OrgsHierarchyRelView(APIView):
+
+    def get(self, request, pk, format=None):
+        try:
+            obj = OrgsHierarchyRel.objects.get(pk=pk)
+            serializer = OrgsHierarchyRelSerializer(obj)
+            return Response(serializer.data)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, pk, format=None):
+        obj = OrgsHierarchyRel.objects.get(pk=pk)
+        obj.delete()
+        return Response(status=status.HTTP_200_OK)
+
+
+class AllOrgsStructuralRels(ListAPIView):
+
+    queryset = OrgsStructuralRel.objects.all()
+    serializer_class = OrgsStructuralRelSerializer
+
+    def post(self, request, format=None):
+        serializer = OrgsStructuralRelSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class OrgsStructuralRelView(APIView):
+
+    def get(self, request, pk, format=None):
+        try:
+            obj = OrgsStructuralRel.objects.get(pk=pk)
+            serializer = OrgsStructuralRelSerializer(obj)
+            return Response(serializer.data)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, pk, format=None):
+        obj = OrgsStructuralRel.objects.get(pk=pk)
+        obj.delete()
+        return Response(status=status.HTTP_200_OK)
+
+
+class AllPositionOrgHierarchyRels(ListAPIView):
+
+    queryset = PositionOrgHierarchyRel.objects.all()
+    serializer_class = PositionOrgHierarchyRelSerializer
+
+    def post(self, request, format=None):
+        serializer = PositionOrgHierarchyRelSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PositionOrgHierarchyRelView(APIView):
+
+    def get(self, request, pk, format=None):
+        try:
+            obj = PositionOrgHierarchyRel.objects.get(pk=pk)
+            serializer = PositionOrgHierarchyRelSerializer(obj)
+            return Response(serializer.data)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, pk, format=None):
+        obj = PositionOrgHierarchyRel.objects.get(pk=pk)
+        obj.delete()
+        return Response(status=status.HTTP_200_OK)
+
+
+class AllOrgPositionHierarchyRels(ListAPIView):
+
+    queryset = OrgPositionHierarchyRel.objects.all()
+    serializer_class = OrgPositionHierarchyRelSerializer
+
+    def post(self, request, format=None):
+        serializer = OrgPositionHierarchyRelSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class OrgPositionHierarchyRelView(APIView):
+
+    def get(self, request, pk, format=None):
+        try:
+            obj = OrgPositionHierarchyRel.objects.get(pk=pk)
+            serializer = OrgPositionHierarchyRelSerializer(obj)
+            return Response(serializer.data)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, pk, format=None):
+        obj = OrgPositionHierarchyRel.objects.get(pk=pk)
+        obj.delete()
+        return Response(status=status.HTTP_200_OK)
+
+
+class AllPositionsHierarchyRels(ListAPIView):
+
+    queryset = PositionsHierarchyRel.objects.all()
+    serializer_class = PositionsHierarchyRelSerializer
+
+    def post(self, request, format=None):
+        serializer = PositionsHierarchyRelSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PositionsHierarchyRelView(APIView):
+
+    def get(self, request, pk, format=None):
+        try:
+            obj = PositionsHierarchyRel.objects.get(pk=pk)
+            serializer = PositionsHierarchyRelSerializer(obj)
+            return Response(serializer.data)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, pk, format=None):
+        obj = PositionsHierarchyRel.objects.get(pk=pk)
+        obj.delete()
         return Response(status=status.HTTP_200_OK)

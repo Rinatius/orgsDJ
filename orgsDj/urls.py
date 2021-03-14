@@ -29,4 +29,20 @@ urlpatterns = [
     re_path(r'positionname/(?P<pk>\d+)', orgs_app.PositionNameView.as_view()),
     path(r'employments/', orgs_app.AllEmployments.as_view()),
     re_path(r'employment/(?P<pk>\d+)', orgs_app.EmploymentView.as_view()),
+    path(r'orghierarchies/', orgs_app.AllOrgsHierarchyRels.as_view()),
+    re_path(r'orghierarchy/(?P<pk>\d+)',
+            orgs_app.OrgsHierarchyRelView.as_view()),
+    path(r'orgstructures/', orgs_app.AllOrgsStructuralRels.as_view()),
+    re_path(r'orgstructure/(?P<pk>\d+)',
+            orgs_app.OrgsStructuralRelView.as_view()),
+    path(r'posorghierarchies/', orgs_app.AllPositionOrgHierarchyRels.as_view()),
+    re_path(r'posorghierarchy/(?P<pk>\d+)',
+            orgs_app.PositionOrgHierarchyRelView.as_view()),
+    path(r'orgposhierarchies/', orgs_app.AllOrgPositionHierarchyRels.as_view()),
+    re_path(r'orgposhierarchy/(?P<pk>\d+)',
+            orgs_app.OrgPositionHierarchyRelView.as_view()),
+    path(r'poshierarchies/', orgs_app.AllPositionsHierarchyRels.as_view()),
+    re_path(r'poshierarchy/(?P<pk>\d+)',
+            orgs_app.OrgsHierarchyRelView.as_view())
+
 ]
