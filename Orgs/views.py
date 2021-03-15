@@ -7,7 +7,8 @@ from .models import Org, Person, Position, PositionName, \
     PositionsHierarchyRel
 from .serializer import OrgSerializer, PersonSerializer, PositionSerializer, \
     PositionNameSerializer, EmploymentSerializer, OrgsHierarchyRelSerializer, OrgsStructuralRelSerializer, \
-    PositionOrgHierarchyRelSerializer, OrgPositionHierarchyRelSerializer, PositionsHierarchyRelSerializer
+    PositionOrgHierarchyRelSerializer, OrgPositionHierarchyRelSerializer, PositionsHierarchyRelSerializer, \
+    OrgProfileSerializer
 
 
 # Create your views here.
@@ -301,3 +302,9 @@ class PositionsHierarchyRelView(APIView):
         obj = PositionsHierarchyRel.objects.get(pk=pk)
         obj.delete()
         return Response(status=status.HTTP_200_OK)
+
+class AllOrgProfiles(ListAPIView):
+
+    queryset = Org.objects.all()
+    serializer_class = OrgProfileSerializer
+

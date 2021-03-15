@@ -61,7 +61,7 @@ class ChronoModel(models.Model):
 
 class Org(ChronoModel):
     name = models.CharField(name="name", max_length=200)
-    predecessor_orgs = models.ManyToManyField("self")
+    predecessor_orgs = models.ManyToManyField("self", blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -144,10 +144,10 @@ class OrgsHierarchyRel(ChronoModel):
 class OrgsStructuralRel(ChronoModel):
     external_org = models.ForeignKey(Org,
                                      on_delete=models.CASCADE,
-                                     related_name="external_org")
+                                     related_name="internal_org")
     internal_org = models.ForeignKey(Org,
                                      on_delete=models.CASCADE,
-                                     related_name="internal_org")
+                                     related_name="external_org")
 
     def __str__(self):
         return self.internal_org + " part of " + self.external_org

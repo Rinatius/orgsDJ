@@ -43,6 +43,6 @@ urlpatterns = [
             orgs_app.OrgPositionHierarchyRelView.as_view()),
     path(r'poshierarchies/', orgs_app.AllPositionsHierarchyRels.as_view()),
     re_path(r'poshierarchy/(?P<pk>\d+)',
-            orgs_app.OrgsHierarchyRelView.as_view())
-
+            orgs_app.OrgsHierarchyRelView.as_view()),
+    path(r'orgprofiles/', orgs_app.AllOrgProfiles.as_view()),
 ]

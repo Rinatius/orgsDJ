@@ -70,3 +70,10 @@ class PositionsHierarchyRelSerializer(serializers.ModelSerializer):
     class Meta:
         model = PositionsHierarchyRel
         fields = '__all__'
+
+
+class OrgProfileSerializer(serializers.ModelSerializer):
+    internal_org = OrgsStructuralRelSerializer(many=True, read_only=True)
+    class Meta:
+        model = Org
+        fields = '__all__'
