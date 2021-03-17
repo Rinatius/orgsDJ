@@ -113,7 +113,9 @@ class PositionName(models.Model):
 
 class Position(ChronoModel):
     name = models.ForeignKey(PositionName, on_delete=models.CASCADE)
-    org = models.ForeignKey(Org, on_delete=models.CASCADE)
+    org = models.ForeignKey(Org,
+                            on_delete=models.CASCADE,
+                            related_name="positions")
 
     def __str__(self):
         return self.name.name + ", " + self.org.name
@@ -132,10 +134,10 @@ class Employment(models.Model):
 class OrgsHierarchyRel(ChronoModel):
     superior_org = models.ForeignKey(Org,
                                      on_delete=models.CASCADE,
-                                     related_name="superior_org")
+                                     related_name="subordinate_orgs")
     subordinate_org = models.ForeignKey(Org,
                                         on_delete=models.CASCADE,
-                                        related_name="subordinate_org")
+                                        related_name="superior_orgs")
 
     def __str__(self):
         return self.superior_org + " supervises " + self.subordinate_org
@@ -144,10 +146,10 @@ class OrgsHierarchyRel(ChronoModel):
 class OrgsStructuralRel(ChronoModel):
     external_org = models.ForeignKey(Org,
                                      on_delete=models.CASCADE,
-                                     related_name="internal_org")
+                                     related_name="internal_orgs")
     internal_org = models.ForeignKey(Org,
                                      on_delete=models.CASCADE,
-                                     related_name="external_org")
+                                     related_name="external_orgs")
 
     def __str__(self):
         return self.internal_org + " part of " + self.external_org

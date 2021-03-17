@@ -52,6 +52,38 @@ class OrgsStructuralRelSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class SubordinateOrgsSerializer(serializers.ModelSerializer):
+    subordinate_org = OrgSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = OrgsHierarchyRel
+        fields = ('subordinate_org', )
+
+
+class SuperiorOrgsSerializer(serializers.ModelSerializer):
+    superior_org = OrgSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = OrgsHierarchyRel
+        fields = ('superior_org', )
+
+
+class InternalOrgsSerializer(serializers.ModelSerializer):
+    internal_org = OrgSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = OrgsStructuralRel
+        fields = ('internal_org', )
+
+
+class ExternalOrgsSerializer(serializers.ModelSerializer):
+    external_org = OrgSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = OrgsStructuralRel
+        fields = ('external_org', )
+
+
 class PositionOrgHierarchyRelSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -73,7 +105,12 @@ class PositionsHierarchyRelSerializer(serializers.ModelSerializer):
 
 
 class OrgProfileSerializer(serializers.ModelSerializer):
-    internal_org = OrgsStructuralRelSerializer(many=True, read_only=True)
+    internal_orgs = InternalOrgsSerializer(many=True, read_only=True)
+    external_orgs = ExternalOrgsSerializer(many=True, read_only=True)
+    subordinate_orgs = SubordinateOrgsSerializer(many=True, read_only=True)
+    superior_orgs = SuperiorOrgsSerializer(many=True, read_only=True)
+    positions = PositionSerializer(many=True, read_only=True)
+
     class Meta:
         model = Org
         fields = '__all__'
