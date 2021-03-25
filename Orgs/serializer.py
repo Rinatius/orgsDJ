@@ -2,6 +2,14 @@ from rest_framework import serializers
 from .models import Org, Person, Position, PositionName, Employment, OrgsHierarchyRel, OrgsStructuralRel, \
     PositionOrgHierarchyRel, OrgPositionHierarchyRel, PositionsHierarchyRel
 
+chronoModelFields = ("id",
+                     "description",
+                     "start_year",
+                     "start_month",
+                     "start_day",
+                     "end_year",
+                     "end_month",
+                     "end_day")
 
 class OrgSerializer(serializers.ModelSerializer):
 
@@ -17,6 +25,13 @@ class PersonSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class PositionNameSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = PositionName
+        fields = '__all__'
+
+
 class PositionSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -24,10 +39,13 @@ class PositionSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class PositionNameSerializer(serializers.ModelSerializer):
+class PositionReadableSerializer(serializers.ModelSerializer):
+
+    name = PositionNameSerializer(many=False, read_only=True)
+    orgs = OrgSerializer(many=True, read_only=True)
 
     class Meta:
-        model = PositionName
+        model = Position
         fields = '__all__'
 
 
@@ -57,7 +75,7 @@ class SubordinateOrgsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrgsHierarchyRel
-        fields = ('subordinate_org', )
+        fields = chronoModelFields + ('subordinate_org', )
 
 
 class SuperiorOrgsSerializer(serializers.ModelSerializer):
@@ -65,15 +83,14 @@ class SuperiorOrgsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrgsHierarchyRel
-        fields = ('superior_org', )
+        fields = chronoModelFields + ('superior_org', )
 
 
-class InternalOrgsSerializer(serializers.ModelSerializer):
-    internal_org = OrgSerializer(many=False, read_only=True)
+class ShortSuperiorOrgsSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = OrgsStructuralRel
-        fields = ('internal_org', )
+        model = OrgsHierarchyRel
+        fields = chronoModelFields + ('superior_org', )
 
 
 class ExternalOrgsSerializer(serializers.ModelSerializer):
@@ -81,7 +98,7 @@ class ExternalOrgsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrgsStructuralRel
-        fields = ('external_org', )
+        fields = chronoModelFields + ('external_org', )
 
 
 class PositionOrgHierarchyRelSerializer(serializers.ModelSerializer):
@@ -104,8 +121,55 @@ class PositionsHierarchyRelSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class SuperiorPosToOrgSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = PositionOrgHierarchyRel
+        fields = chronoModelFields + ('superior_position', )
+
+class OrgConnectionsSerializer(serializers.ModelSerializer):
+    superior_orgs = ShortSuperiorOrgsSerializer(many=True, read_only=True)
+    superior_positions = SuperiorPosToOrgSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Org
+        fields = '__all__'
+
+
+class SuperiorPositionsSerializer(serializers.ModelSerializer):
+    superior_position = PositionSerializer(read_only=True)
+
+    class Meta:
+        model = PositionsHierarchyRel
+        fields = chronoModelFields + ('superior_position', )
+
+class SuperiorOrgToPosSerializer(serializers.ModelSerializer):
+    su
+
+    class Meta:
+        model = OrgPositionHierarchyRel
+        fields = chronoModelFields + ('superior_org', )
+
+
+class PositionConnectionsSerializer(serializers.ModelSerializer):
+    superior_positions = SuperiorPositionsSerializer(many=True, read_only=True)
+    superior_orgs = SuperiorOrgToPosSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Org
+        fields = '__all__'
+
+
+class InternalOrgsSerializer(serializers.ModelSerializer):
+    internal_org = OrgConnectionsSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = OrgsStructuralRel
+        fields = chronoModelFields + ('internal_org',)
+
+
 class OrgProfileSerializer(serializers.ModelSerializer):
-    internal_orgs = InternalOrgsSerializer(many=True, read_only=True)
+    internal_orgs = OrgConnectionsSerializer(many=True, read_only=True)
     external_orgs = ExternalOrgsSerializer(many=True, read_only=True)
     subordinate_orgs = SubordinateOrgsSerializer(many=True, read_only=True)
     superior_orgs = SuperiorOrgsSerializer(many=True, read_only=True)

@@ -3,12 +3,14 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.generics import ListAPIView
 from .models import Org, Person, Position, PositionName, \
-    Employment, OrgsHierarchyRel, OrgsStructuralRel, PositionOrgHierarchyRel, OrgPositionHierarchyRel, \
+    Employment, OrgsHierarchyRel, OrgsStructuralRel, \
+    PositionOrgHierarchyRel, OrgPositionHierarchyRel, \
     PositionsHierarchyRel
 from .serializer import OrgSerializer, PersonSerializer, PositionSerializer, \
-    PositionNameSerializer, EmploymentSerializer, OrgsHierarchyRelSerializer, OrgsStructuralRelSerializer, \
-    PositionOrgHierarchyRelSerializer, OrgPositionHierarchyRelSerializer, PositionsHierarchyRelSerializer, \
-    OrgProfileSerializer
+    PositionNameSerializer, EmploymentSerializer, OrgsHierarchyRelSerializer, \
+    OrgsStructuralRelSerializer, PositionOrgHierarchyRelSerializer, \
+    OrgPositionHierarchyRelSerializer, PositionsHierarchyRelSerializer, \
+    OrgProfileSerializer, PositionReadableSerializer
 
 
 # Create your views here.
