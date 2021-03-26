@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Org, Person, Position, PositionName, EdgeName, Edge
+from .models import Org, Person, Position, PositionName, EdgeName, Edge, Node
 
 chronoModelFields = ("id",
                      "description",
@@ -18,6 +18,7 @@ class OrgSerializer(serializers.ModelSerializer):
     class Meta:
         model = Org
         fields = '__all__'
+        depth = 2
 
 
 class PersonSerializer(serializers.ModelSerializer):
@@ -62,6 +63,21 @@ class EdgeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Edge
+        fields = '__all__'
+
+
+class NodeSerializer(serializers.ModelSerializer):
+
+    def to_representation(self, instance):
+        if isinstance(instance, Org):
+            return OrgSerializer(instance=instance).data
+        elif isinstance(instance, Position):
+            return PositionSerializer(instance=instance).data
+        else:
+            return PersonSerializer(instance=instance).data
+
+    class Meta:
+        model = Node
         fields = '__all__'
 
 # class EmploymentSerializer(serializers.ModelSerializer):

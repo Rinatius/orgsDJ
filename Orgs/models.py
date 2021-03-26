@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
+from model_utils.managers import InheritanceManager
 
 # Create your models here.
 
@@ -60,6 +61,7 @@ class ChronoModel(models.Model):
 
 
 class Node(ChronoModel):
+    objects = InheritanceManager()
 
     def __str__(self):
         return str(self.id)

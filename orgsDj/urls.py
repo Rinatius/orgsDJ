@@ -30,5 +30,6 @@ urlpatterns = [
     path(r'edgenames/', orgs_app.AllEdgeNames.as_view()),
     re_path(r'edgename/(?P<pk>\d+)', orgs_app.EdgeNameView.as_view()),
     path(r'edges/', orgs_app.AllEdges.as_view()),
-    re_path(r'edge/(?P<pk>\d+)', orgs_app.EdgeView.as_view())
+    re_path(r'edge/(?P<pk>\d+)', orgs_app.EdgeView.as_view()),
+    re_path(r'node/(?P<pk>\d+)', orgs_app.RetrieveNodeAPIView.as_view())
 ]

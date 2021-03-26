@@ -1,10 +1,10 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.generics import ListAPIView
-from .models import Org, Person, Position, PositionName, EdgeName, Edge
+from .models import Org, Person, Position, PositionName, EdgeName, Edge, Node
 from .serializer import OrgSerializer, PersonSerializer, PositionSerializer, EdgeNameSerializer, EdgeSerializer, \
-    PositionNameSerializer
+    PositionNameSerializer, NodeSerializer
 
 
 # Create your views here.
@@ -182,3 +182,14 @@ class EdgeView(APIView):
         edge = Edge.objects.get(pk=pk)
         edge.delete()
         return Response(status=status.HTTP_200_OK)
+
+
+class NodeSubClassFieldsMixin(object):
+
+    def get_queryset(self):
+        return Node.objects.select_subclasses()
+
+
+class RetrieveNodeAPIView(NodeSubClassFieldsMixin, generics.RetrieveDestroyAPIView):
+    serializer_class = NodeSerializer
+
