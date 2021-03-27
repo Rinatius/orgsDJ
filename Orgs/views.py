@@ -2,9 +2,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, generics
 from rest_framework.generics import ListAPIView
-from .models import Org, Person, Position, PositionName, EdgeName, Edge, Node
-from .serializer import OrgSerializer, PersonSerializer, PositionSerializer, EdgeNameSerializer, EdgeSerializer, \
-    PositionNameSerializer, NodeSerializer
+from .models import Org, Person, Position, PositionType, EdgeType, Edge, Node
+from .serializer import OrgSerializer, PersonSerializer, PositionSerializer, EdgeTypeSerializer, EdgeSerializer, \
+    PositionTypeSerializer, NodeSerializer
 
 
 # Create your views here.
@@ -99,11 +99,11 @@ class PositionView(APIView):
 
 class AllPositionNames(ListAPIView):
 
-    queryset = PositionName.objects.all()
-    serializer_class = PositionNameSerializer
+    queryset = PositionType.objects.all()
+    serializer_class = PositionTypeSerializer
 
     def post(self, request, format=None):
-        serializer = PositionNameSerializer(data=request.data)
+        serializer = PositionTypeSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -114,25 +114,25 @@ class PositionNameView(APIView):
 
     def get(self, request, pk, format=None):
         try:
-            position_name = PositionName.objects.get(pk=pk)
-            serializer = PositionNameSerializer(position_name)
+            position_name = PositionType.objects.get(pk=pk)
+            serializer = PositionTypeSerializer(position_name)
             return Response(serializer.data)
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
     def delete(self, request, pk, format=None):
-        org = PositionName.objects.get(pk=pk)
+        org = PositionType.objects.get(pk=pk)
         org.delete()
         return Response(status=status.HTTP_200_OK)
 
 
 class AllEdgeNames(ListAPIView):
 
-    queryset = EdgeName.objects.all()
-    serializer_class = EdgeNameSerializer
+    queryset = EdgeType.objects.all()
+    serializer_class = EdgeTypeSerializer
 
     def post(self, request, format=None):
-        serializer = EdgeNameSerializer(data=request.data)
+        serializer = EdgeTypeSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -143,14 +143,14 @@ class EdgeNameView(APIView):
 
     def get(self, request, pk, format=None):
         try:
-            edge_name = EdgeName.objects.get(pk=pk)
-            serializer = EdgeNameSerializer(edge_name)
+            edge_name = EdgeType.objects.get(pk=pk)
+            serializer = EdgeTypeSerializer(edge_name)
             return Response(serializer.data)
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
     def delete(self, request, pk, format=None):
-        edge_name = EdgeName.objects.get(pk=pk)
+        edge_name = EdgeType.objects.get(pk=pk)
         edge_name.delete()
         return Response(status=status.HTTP_200_OK)
 

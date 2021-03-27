@@ -6,7 +6,6 @@ from model_utils.managers import InheritanceManager
 
 
 class ChronoModel(models.Model):
-    description = models.TextField(name="description", blank=True, null=True)
     start_year = models.IntegerField(
         blank=True,
         null=True,
@@ -59,8 +58,20 @@ class ChronoModel(models.Model):
     class Meta:
         abstract = True
 
+class NodeType(models.Model):
+    node_type = models.CharField(max_length=100)
+    json_schema = models.JSONField(null=True)
+
+    def __str__(self):
+        return self.node_type
+
 
 class Node(ChronoModel):
+    short_name = models.CharField(max_length=200)
+    aliases = models.TextField(blank=True)
+    description = models.TextField(name="description", blank=True, null=True)
+    json_data = models.JSONField(null=True)
+    node_type = models.ForeignKey(NodeType, on_delete=models.CASCADE)
     objects = InheritanceManager()
 
     def __str__(self):
@@ -68,11 +79,9 @@ class Node(ChronoModel):
 
 
 class Org(Node):
-    name = models.CharField(name="name", max_length=200)
-    # predecessor_orgs = models.ManyToManyField("self", blank=True, null=True)
 
     def __str__(self):
-        return self.name
+        return self.short_name
 
 
 class Person(Node):
@@ -86,30 +95,29 @@ class Person(Node):
                 + self.middle_name)
 
 
-class PositionName(models.Model):
-    name = models.CharField(name="name", max_length=400)
+class PositionType(models.Model):
+    type = models.CharField(max_length=400)
 
     def __str__(self):
-        return self.name
+        return self.type
 
 
 class Position(Node):
-    name = models.ForeignKey(PositionName, on_delete=models.CASCADE)
-    #orgs = models.ManyToManyField(Org, related_name="positions")
+    position_type = models.ManyToManyField(PositionType)
 
     def __str__(self):
-        return self.name.name + ", " + self.orgs
+        return self.name.type + ", " + self.orgs
 
 
-class EdgeName(models.Model):
-    name = models.CharField(name="name", max_length=400)
+class EdgeType(models.Model):
+    type = models.CharField(max_length=400)
 
     def __str__(self):
-        return self.name
+        return self.type
 
 
 class Edge(ChronoModel):
-    name = models.ForeignKey(EdgeName, on_delete=models.CASCADE)
+    type = models.ForeignKey(EdgeType, on_delete=models.CASCADE)
     left_node = models.ForeignKey(Node,
                                   on_delete=models.CASCADE,
                                   related_name="right_nodes")

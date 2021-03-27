@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Org, Person, Position, PositionName, EdgeName, Edge, Node
+from .models import Org, Person, Position, PositionType, EdgeType, Edge, Node
 
 chronoModelFields = ("id",
                      "description",
@@ -28,10 +28,10 @@ class PersonSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class PositionNameSerializer(serializers.ModelSerializer):
+class PositionTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = PositionName
+        model = PositionType
         fields = '__all__'
 
 
@@ -44,7 +44,7 @@ class PositionSerializer(serializers.ModelSerializer):
 
 class PositionReadableSerializer(serializers.ModelSerializer):
 
-    name = PositionNameSerializer(many=False, read_only=True)
+    name = PositionTypeSerializer(many=False, read_only=True)
     orgs = OrgSerializer(many=True, read_only=True)
 
     class Meta:
@@ -52,10 +52,10 @@ class PositionReadableSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class EdgeNameSerializer(serializers.ModelSerializer):
+class EdgeTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = EdgeName
+        model = EdgeType
         fields = '__all__'
 
 
