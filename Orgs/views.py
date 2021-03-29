@@ -2,131 +2,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, generics
 from rest_framework.generics import ListAPIView
-from .models import Org, Person, Position, PositionType, EdgeType, Edge, Node
-from .serializer import OrgSerializer, PersonSerializer, PositionSerializer, EdgeTypeSerializer, EdgeSerializer, \
-    PositionTypeSerializer, NodeSerializer
+from .models import EdgeType, Edge, Node, NodeType, ValidEdge
+from .serializer import EdgeTypeSerializer, EdgeSerializer, \
+    NodeSerializer, NodeTypeSerializer, ValidEdgeSerializer
 
 
-# Create your views here.
-
-
-class AllOrgs(ListAPIView):
-
-    queryset = Org.objects.all()
-    serializer_class = OrgSerializer
-
-    def post(self, request, format=None):
-        serializer = OrgSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class OrgView(APIView):
-
-    def get(self, request, pk, format=None):
-        try:
-            org = Org.objects.get(pk=pk)
-            serializer = OrgSerializer(org)
-            return Response(serializer.data)
-        except:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-    def delete(self, request, pk, format=None):
-        org = Org.objects.get(pk=pk)
-        org.delete()
-        return Response(status=status.HTTP_200_OK)
-
-
-class AllPersons(ListAPIView):
-
-    queryset = Person.objects.all()
-    serializer_class = PersonSerializer
-
-    def post(self, request, format=None):
-        serializer = PersonSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class PersonView(APIView):
-
-    def get(self, request, pk, format=None):
-        try:
-            person = Person.objects.get(pk=pk)
-            serializer = PersonSerializer(person)
-            return Response(serializer.data)
-        except:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-    def delete(self, request, pk, format=None):
-        org = Person.objects.get(pk=pk)
-        org.delete()
-        return Response(status=status.HTTP_200_OK)
-
-
-class AllPositions(ListAPIView):
-
-    queryset = Position.objects.all()
-    serializer_class = PositionSerializer
-
-    def post(self, request, format=None):
-        serializer = PositionSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class PositionView(APIView):
-
-    def get(self, request, pk, format=None):
-        try:
-            position = Position.objects.get(pk=pk)
-            serializer = PositionSerializer(position)
-            return Response(serializer.data)
-        except:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-    def delete(self, request, pk, format=None):
-        org = Position.objects.get(pk=pk)
-        org.delete()
-        return Response(status=status.HTTP_200_OK)
-
-
-class AllPositionNames(ListAPIView):
-
-    queryset = PositionType.objects.all()
-    serializer_class = PositionTypeSerializer
-
-    def post(self, request, format=None):
-        serializer = PositionTypeSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class PositionNameView(APIView):
-
-    def get(self, request, pk, format=None):
-        try:
-            position_name = PositionType.objects.get(pk=pk)
-            serializer = PositionTypeSerializer(position_name)
-            return Response(serializer.data)
-        except:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-    def delete(self, request, pk, format=None):
-        org = PositionType.objects.get(pk=pk)
-        org.delete()
-        return Response(status=status.HTTP_200_OK)
-
-
-class AllEdgeNames(ListAPIView):
+class AllEdgeTypes(ListAPIView):
 
     queryset = EdgeType.objects.all()
     serializer_class = EdgeTypeSerializer
@@ -139,24 +20,36 @@ class AllEdgeNames(ListAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class EdgeNameView(APIView):
+class EdgeTypeView(APIView):
 
     def get(self, request, pk, format=None):
         try:
-            edge_name = EdgeType.objects.get(pk=pk)
-            serializer = EdgeTypeSerializer(edge_name)
+            objects = EdgeType.objects.get(pk=pk)
+            serializer = EdgeTypeSerializer(objects)
             return Response(serializer.data)
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
     def delete(self, request, pk, format=None):
-        edge_name = EdgeType.objects.get(pk=pk)
-        edge_name.delete()
+        obj = EdgeType.objects.get(pk=pk)
+        obj.delete()
         return Response(status=status.HTTP_200_OK)
 
 
-class AllEdges(ListAPIView):
+class AllValidEdges(ListAPIView):
 
+    queryset = ValidEdge.objects.all()
+    serializer_class = ValidEdgeSerializer
+
+    def post(self, request, format=None):
+        serializer = ValidEdgeSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AllEdges(ListAPIView):
     queryset = Edge.objects.all()
     serializer_class = EdgeSerializer
 
@@ -184,12 +77,37 @@ class EdgeView(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
-class NodeSubClassFieldsMixin(object):
+class AllNodeTypes(ListAPIView):
 
-    def get_queryset(self):
-        return Node.objects.select_subclasses()
+    queryset = NodeType.objects.all()
+    serializer_class = NodeTypeSerializer
+
+    def post(self, request, format=None):
+        serializer = NodeTypeSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class RetrieveNodeAPIView(NodeSubClassFieldsMixin, generics.RetrieveDestroyAPIView):
+class AllNodes(ListAPIView):
+    queryset = Node.objects.all()
     serializer_class = NodeSerializer
+
+    def post(self, request, format=None):
+        serializer = NodeSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# class NodeSubClassFieldsMixin(object):
+#
+#     def get_queryset(self):
+#         return Node.objects.select_subclasses()
+#
+#
+# class RetrieveNodeAPIView(NodeSubClassFieldsMixin, generics.RetrieveDestroyAPIView):
+#     serializer_class = NodeSerializer
 

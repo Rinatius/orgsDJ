@@ -19,17 +19,12 @@ import Orgs.views as orgs_app
 
 urlpatterns = [
     path(r'admin/', admin.site.urls),
-    path(r'orgs/', orgs_app.AllOrgs.as_view()),
-    re_path(r'org/(?P<pk>\d+)', orgs_app.OrgView.as_view()),
-    path(r'persons/', orgs_app.AllPersons.as_view()),
-    re_path(r'person/(?P<pk>\d+)', orgs_app.PersonView.as_view()),
-    path(r'positions/', orgs_app.AllPositions.as_view()),
-    re_path(r'position/(?P<pk>\d+)', orgs_app.PositionView.as_view()),
-    path(r'positionnames/', orgs_app.AllPositionNames.as_view()),
-    re_path(r'positionname/(?P<pk>\d+)', orgs_app.PositionNameView.as_view()),
-    path(r'edgenames/', orgs_app.AllEdgeNames.as_view()),
-    re_path(r'edgename/(?P<pk>\d+)', orgs_app.EdgeNameView.as_view()),
+    path(r'nodes/', orgs_app.AllNodes.as_view()),
+    path(r'edges/', orgs_app.AllEdges.as_view()),
+    path(r'nodetypes/', orgs_app.AllNodeTypes.as_view()),
+    path(r'edgetypes/', orgs_app.AllEdgeTypes.as_view()),
+    re_path(r'edgetype/(?P<pk>\d+)', orgs_app.EdgeTypeView.as_view()),
     path(r'edges/', orgs_app.AllEdges.as_view()),
     re_path(r'edge/(?P<pk>\d+)', orgs_app.EdgeView.as_view()),
-    re_path(r'node/(?P<pk>\d+)', orgs_app.RetrieveNodeAPIView.as_view())
+    path(r'validedges/', orgs_app.AllValidEdges.as_view())
 ]
