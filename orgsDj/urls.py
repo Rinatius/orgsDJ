@@ -26,5 +26,6 @@ urlpatterns = [
     re_path(r'edgetype/(?P<pk>\d+)', orgs_app.EdgeTypeView.as_view()),
     path(r'edges/', orgs_app.AllEdges.as_view()),
     re_path(r'edge/(?P<pk>\d+)', orgs_app.EdgeView.as_view()),
-    path(r'validedges/', orgs_app.AllValidEdges.as_view())
+    path(r'validedges/', orgs_app.AllValidEdges.as_view()),
+    re_path(r'noderels/(?P<pk>\d+)', orgs_app.NodeRelsView.as_view()),
 ]

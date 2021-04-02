@@ -66,14 +66,14 @@ class Node(ChronoModel):
     json_data = models.JSONField(null=True)
 
     def __str__(self):
-        return str(self.id)
+        return str(self.short_name)
 
 
 class Edge(ChronoModel):
     edge_type = models.ForeignKey(EdgeType, on_delete=models.CASCADE)
     left_node = models.ForeignKey(Node,
                                   on_delete=models.CASCADE,
-                                  related_name="right_nodes")
+                                  related_name="right_edges")
     right_node = models.ForeignKey(Node,
                                    on_delete=models.CASCADE,
-                                   related_name="left_nodes")
+                                   related_name="left_edges")

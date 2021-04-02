@@ -45,3 +45,29 @@ class ValidEdgeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ValidEdge
         fields = '__all__'
+
+
+class LeftEdgeSerializer(serializers.ModelSerializer):
+    left_node = NodeSerializer(read_only=True)
+
+    class Meta:
+        model = Edge
+        fields = '__all__'
+
+
+class RightEdgeSerializer(serializers.ModelSerializer):
+    right_node = NodeSerializer(read_only=True)
+
+    class Meta:
+        model = Edge
+        fields = '__all__'
+
+
+class NodeRelsSerializer(serializers.ModelSerializer):
+    left_edges = EdgeSerializer(many=True, read_only=True)
+    right_edges = EdgeSerializer(many=True, read_only=True)
+    left_edges__left_node = NodeSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Node
+        fields = '__all__'
