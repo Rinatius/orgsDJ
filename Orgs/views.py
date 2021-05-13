@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.generics import ListAPIView
 from django.db.models import Q
-from .models import EdgeType, Edge, Node, NodeType, ValidEdge
+from .models import EdgeType, Edge, Node, NodeType, ValidEdgeCombination
 from .serializer import EdgeTypeSerializer, EdgeSerializer, \
     NodeSerializer, NodeTypeSerializer, ValidEdgeSerializer, LeftEdgeSerializer, RightEdgeSerializer
 from drf_multiple_model.views import ObjectMultipleModelAPIView
@@ -40,7 +40,7 @@ class EdgeTypeView(APIView):
 
 class AllValidEdges(ListAPIView):
 
-    queryset = ValidEdge.objects.all()
+    queryset = ValidEdgeCombination.objects.all()
     serializer_class = ValidEdgeSerializer
 
     def post(self, request, format=None):
