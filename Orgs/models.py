@@ -53,21 +53,21 @@ class NodeType(TypeModel):
         return self.type
 
 
-class ValidEdgeCombination(models.Model):
+class ValidEdgeType(models.Model):
     edge_type = models.ForeignKey(EdgeType,
                                   on_delete=models.CASCADE,
                                   related_name="compatible_node_combos")
-    left_node = models.ForeignKey(NodeType,
-                                  on_delete=models.CASCADE,
-                                  related_name="compatible_edges_right_nodes")
-    right_node = models.ForeignKey(NodeType,
-                                   on_delete=models.CASCADE,
-                                   related_name="compatible_edges_left_nodes")
+    left_node_type = models.ForeignKey(NodeType,
+                                       on_delete=models.CASCADE,
+                                       related_name="right_valid_edge_types")
+    right_node_type = models.ForeignKey(NodeType,
+                                        on_delete=models.CASCADE,
+                                        related_name="left_valid_edge_types")
 
     def __str__(self):
-        return (self.left_node.__str__() + "--" +
+        return (self.left_node_type.__str__() + "--" +
                 self.edge_type.__str__() + "-->" +
-                self.right_node.__str__())
+                self.right_node_type.__str__())
 
 
 class Node(ChronoModel):
@@ -94,7 +94,7 @@ class Edge(ChronoModel):
 class Display(models.Model):
     name = models.CharField(max_length=200)
     parent_node_type = models.ForeignKey(NodeType, on_delete=models.CASCADE)
-    valid_edge_combinations = models.ManyToManyField(ValidEdgeCombination)
+    valid_edge_combinations = models.ManyToManyField(ValidEdgeType)
     GRAPH = "GR"
     TREE = "TR"
     TEXT = "TX"

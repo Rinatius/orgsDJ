@@ -98,12 +98,12 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='ValidEdgeCombination',
+            name='ValidEdgeType',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('edge_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='compatible_node_combos', to='Orgs.edgetype')),
-                ('left_node', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='compatible_edges_right_nodes', to='Orgs.nodetype')),
-                ('right_node', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='compatible_edges_left_nodes', to='Orgs.nodetype')),
+                ('left_node_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='compatible_edges_right_nodes', to='Orgs.nodetype')),
+                ('right_node_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='compatible_edges_left_nodes', to='Orgs.nodetype')),
             ],
         ),
         migrations.DeleteModel(
@@ -121,12 +121,12 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='edge',
-            name='left_node',
+            name='left_node_type',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='right_edges', to='Orgs.node'),
         ),
         migrations.AddField(
             model_name='edge',
-            name='right_node',
+            name='right_node_type',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='left_edges', to='Orgs.node'),
         ),
         migrations.AddField(
@@ -147,6 +147,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='display',
             name='valid_edge_combinations',
-            field=models.ManyToManyField(to='Orgs.ValidEdgeCombination'),
+            field=models.ManyToManyField(to='Orgs.ValidEdgeType'),
         ),
     ]
