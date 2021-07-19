@@ -94,7 +94,12 @@ class Edge(ChronoModel):
 class Display(models.Model):
     name = models.CharField(max_length=200)
     parent_node_type = models.ForeignKey(NodeType, on_delete=models.CASCADE)
-    valid_edge_combinations = models.ManyToManyField(ValidEdgeType)
+    parent_left_valid_edges = models.ManyToManyField(ValidEdgeType,
+                                                     related_name="displays_left")
+    parent_right_valid_edges = models.ManyToManyField(ValidEdgeType,
+                                                      related_name="displays_right")
+    second_level_display = models.ManyToManyField("self",
+                                                  symmetrical=False)
     GRAPH = "GR"
     TREE = "TR"
     TEXT = "TX"
@@ -132,6 +137,10 @@ class DisplayOrder(models.Model):
     order = models.IntegerField()
     display = models.ForeignKey(Display, on_delete=models.CASCADE)
     display_set = models.ForeignKey(DisplaySet, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ["display", "display_set"]
+
 
     def __str__(self):
         return (str(self.order) + " " +
