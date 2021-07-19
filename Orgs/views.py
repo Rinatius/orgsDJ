@@ -1,111 +1,39 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status, filters
+from rest_framework import status, filters, viewsets
 from rest_framework.generics import ListAPIView
 from django.db.models import Q
-from .models import EdgeType, Edge, Node, NodeType, ValidEdgeType
+from .models import EdgeType, Edge, Node, NodeType, ValidEdgeType, Display, DisplaySet, DisplayOrder
 from .serializer import EdgeTypeSerializer, EdgeSerializer, \
     NodeSerializer, NodeTypeSerializer, ValidEdgeTypeSerializer, LeftEdgeSerializer, RightEdgeSerializer, \
-    WorkingNodeSerializer, LeftValidEdgeTypeSerializer, RightValidEdgeTypeSerializer
+    WorkingNodeSerializer, LeftValidEdgeTypeSerializer, RightValidEdgeTypeSerializer, DisplaySerializer, \
+    DisplaySetSerializer, DisplayOrderSerializer
 from drf_multiple_model.views import ObjectMultipleModelAPIView
 
 
-class AllEdgeTypes(ListAPIView):
+class EdgeTypeViewSet(viewsets.ModelViewSet):
 
-    queryset = EdgeType.objects.all()
     serializer_class = EdgeTypeSerializer
-
-    def post(self, request, format=None):
-        serializer = EdgeTypeSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    queryset = EdgeType.objects.all()
 
 
-class EdgeTypeView(APIView):
+class ValidEdgeViewSet(viewsets.ModelViewSet):
 
-    def get(self, request, pk, format=None):
-        try:
-            objects = EdgeType.objects.get(pk=pk)
-            serializer = EdgeTypeSerializer(objects)
-            return Response(serializer.data)
-        except:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-    def delete(self, request, pk, format=None):
-        obj = EdgeType.objects.get(pk=pk)
-        obj.delete()
-        return Response(status=status.HTTP_200_OK)
-
-
-class AllValidEdges(ListAPIView):
-
-    queryset = ValidEdgeType.objects.all()
     serializer_class = ValidEdgeTypeSerializer
-
-    def post(self, request, format=None):
-        serializer = ValidEdgeTypeSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    queryset = ValidEdgeType.objects.all()
 
 
-class AllEdges(ListAPIView):
-    queryset = Edge.objects.all()
+class EdgeViewSet(viewsets.ModelViewSet):
+
     serializer_class = EdgeSerializer
-
-    def post(self, request, format=None):
-        serializer = EdgeSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    queryset = Edge.objects.all()
 
 
-class EdgeView(APIView):
+class NodeViewSet(viewsets.ModelViewSet):
 
-    def get(self, request, pk, format=None):
-        try:
-            edge = Edge.objects.get(pk=pk)
-            serializer = EdgeSerializer(edge)
-            return Response(serializer.data)
-        except:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-    def delete(self, request, pk, format=None):
-        edge = Edge.objects.get(pk=pk)
-        edge.delete()
-        return Response(status=status.HTTP_200_OK)
-
-
-class AllNodeTypes(ListAPIView):
-
-    queryset = NodeType.objects.all()
-    serializer_class = NodeTypeSerializer
-
-    def post(self, request, format=None):
-        serializer = NodeTypeSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class AllNodes(ListAPIView):
-    queryset = Node.objects.all()
     serializer_class = NodeSerializer
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['short_name', 'aliases']
+    queryset = Node.objects.all()
 
-    def post(self, request, format=None):
-        serializer = NodeSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
     
 class NodeValidEdges(ObjectMultipleModelAPIView):
 
@@ -198,3 +126,23 @@ class NodeRelsView(ObjectMultipleModelAPIView):
     #     serializer = EdgeSerializer(n_nodes_edges, many=True)
     #     #qsl = list(qs)
     #     return Response(serializer.data)
+
+
+class NodeTypeViewSet(viewsets.ModelViewSet):
+    serializer_class = NodeTypeSerializer
+    queryset = NodeType.objects.all()
+
+
+class DisplayViewSet(viewsets.ModelViewSet):
+    serializer_class = DisplaySerializer
+    queryset = Display.objects.all()
+
+
+class DisplaySetViewSet(viewsets.ModelViewSet):
+    serializer_class = DisplaySetSerializer
+    queryset = DisplaySet.objects.all()
+
+
+class DisplayOrderViewSet(viewsets.ModelViewSet):
+    serializer_class = DisplayOrderSerializer
+    queryset = DisplayOrder.objects.all()

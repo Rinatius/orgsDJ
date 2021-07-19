@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import EdgeType, Edge, Node, NodeType, ValidEdgeType
+from .models import EdgeType, Edge, Node, NodeType, ValidEdgeType, Display, DisplaySet, DisplayOrder
+
 
 # Basic write-ready serializers
 
@@ -96,4 +97,25 @@ class NodeRelsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Node
+        fields = '__all__'
+
+
+class DisplaySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Display
+        fields = '__all__'
+
+
+class DisplaySetSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = DisplaySet
+        fields = '__all__'
+
+
+class DisplayOrderSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = DisplayOrder
         fields = '__all__'
