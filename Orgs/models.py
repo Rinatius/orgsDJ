@@ -1,6 +1,4 @@
 from django.db import models
-from django.core.validators import MaxValueValidator, MinValueValidator
-from model_utils.managers import InheritanceManager
 
 # Create your models here.
 
@@ -140,7 +138,6 @@ class DisplayOrder(models.Model):
 
     class Meta:
         unique_together = ["display", "display_set"]
-
 
     def __str__(self):
         return (str(self.order) + " " +
