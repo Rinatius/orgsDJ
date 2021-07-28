@@ -19,8 +19,8 @@ class ChronoModel(models.Model):
         abstract = True
 
 
-class TypeModel(models.Model):
-    type = models.CharField(max_length=100)
+class SchemaModel(models.Model):
+    name = models.CharField(max_length=100)
     json_schema = models.JSONField(null=True, blank=True)
     ui_schema = models.JSONField(null=True, blank=True)
     REACT_JSONSCHEMA_FORM = "RJSF"
@@ -35,41 +35,41 @@ class TypeModel(models.Model):
         abstract = True
 
 
-class EdgeType(TypeModel):
+class EdgeSchema(SchemaModel):
 
     def __str__(self):
-        return self.type
+        return self.name
 
 
-class NodeType(TypeModel):
+class NodeSchema(SchemaModel):
     default_display_set = models.ForeignKey("DisplaySet",
                                             models.SET_NULL,
                                             blank=True,
                                             null=True,)
 
     def __str__(self):
-        return self.type
+        return self.name
 
 
-class ValidEdgeType(models.Model):
-    edge_type = models.ForeignKey(EdgeType,
-                                  on_delete=models.CASCADE,
-                                  related_name="compatible_node_combos")
-    left_node_type = models.ForeignKey(NodeType,
-                                       on_delete=models.CASCADE,
-                                       related_name="right_valid_edge_types")
-    right_node_type = models.ForeignKey(NodeType,
-                                        on_delete=models.CASCADE,
-                                        related_name="left_valid_edge_types")
+class ValidEdge(models.Model):
+    edge_schema = models.ForeignKey(EdgeSchema,
+                                    on_delete=models.CASCADE,
+                                    related_name="compatible_node_combos")
+    left_node_schema = models.ForeignKey(NodeSchema,
+                                         on_delete=models.CASCADE,
+                                         related_name="right_valid_edges")
+    right_node_schema = models.ForeignKey(NodeSchema,
+                                          on_delete=models.CASCADE,
+                                          related_name="left_valid_edges")
 
     def __str__(self):
-        return (self.left_node_type.__str__() + "--" +
-                self.edge_type.__str__() + "-->" +
-                self.right_node_type.__str__())
+        return (self.left_node_schema.__str__() + "--" +
+                self.edge_schema.__str__() + "-->" +
+                self.right_node_schema.__str__())
 
 
 class Node(ChronoModel):
-    node_type = models.ForeignKey(NodeType, on_delete=models.CASCADE)
+    schema = models.ForeignKey(NodeSchema, on_delete=models.CASCADE)
     short_name = models.CharField(max_length=200)
     aliases = models.TextField(blank=True)
     description = models.TextField(name="description", blank=True, null=True)
@@ -80,7 +80,7 @@ class Node(ChronoModel):
 
 
 class Edge(ChronoModel):
-    edge_type = models.ForeignKey(EdgeType, on_delete=models.CASCADE)
+    edge_schema = models.ForeignKey(EdgeSchema, on_delete=models.CASCADE)
     left_node = models.ForeignKey(Node,
                                   on_delete=models.CASCADE,
                                   related_name="right_edges")
@@ -91,11 +91,11 @@ class Edge(ChronoModel):
 
 class Display(models.Model):
     name = models.CharField(max_length=200)
-    parent_node_type = models.ForeignKey(NodeType, on_delete=models.CASCADE)
-    parent_left_valid_edges = models.ManyToManyField(ValidEdgeType,
-                                                     related_name="displays_left")
-    parent_right_valid_edges = models.ManyToManyField(ValidEdgeType,
-                                                      related_name="displays_right")
+    parent_node_schema = models.ForeignKey(NodeSchema, on_delete=models.CASCADE)
+    parent_left_valid_edges = models.ManyToManyField(ValidEdge,
+                                                     related_name="displays_right")
+    parent_right_valid_edges = models.ManyToManyField(ValidEdge,
+                                                      related_name="displays_left")
     second_level_display = models.ManyToManyField("self",
                                                   symmetrical=False)
     GRAPH = "GR"
@@ -104,7 +104,7 @@ class Display(models.Model):
     LINK = "LI"
     CHRONOLOGY = "CH"
     AGGREGATION = "AG"
-    DISPLAY_TYPE_CHOICES = [
+    LENS_CHOICES = [
         (GRAPH, "Graph"),
         (TREE,  "Tree"),
         (TEXT, "Text"),
@@ -112,9 +112,9 @@ class Display(models.Model):
         (CHRONOLOGY, "Chronology"),
         (AGGREGATION, "Aggregation")
     ]
-    display_type = models.CharField(max_length=2,
-                                    choices=DISPLAY_TYPE_CHOICES,
-                                    default=GRAPH)
+    lens = models.CharField(max_length=2,
+                            choices=LENS_CHOICES,
+                            default=GRAPH)
 
     def __str__(self):
         return self.name
@@ -122,9 +122,9 @@ class Display(models.Model):
 
 class DisplaySet(models.Model):
     name = models.CharField(max_length=200)
-    node_type = models.ForeignKey(NodeType,
-                                  on_delete=models.CASCADE,
-                                  related_name="display_sets")
+    node_schema = models.ForeignKey(NodeSchema,
+                                    on_delete=models.CASCADE,
+                                    related_name="display_sets")
     displays = models.ManyToManyField(Display, through="DisplayOrder")
 
     def __str__(self):

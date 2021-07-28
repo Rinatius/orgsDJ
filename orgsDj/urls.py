@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.urls import path, re_path
 from django.contrib import admin
+from graphene_django.views import GraphQLView
 from rest_framework.routers import DefaultRouter
 
 import Orgs.views as orgs_app
@@ -61,4 +62,6 @@ router.register(api_v1 + r'displayorder',
 #     path(r'nodevalidedges/', orgs_app.NodeRelsView.as_view()),
 # ]
 
-urlpatterns = [path('admin/', admin.site.urls), ] + router.urls
+urlpatterns = [path('admin/',
+               admin.site.urls),
+               path('graphql/', GraphQLView.as_view(graphiql=True))] + router.urls

@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'Orgs.apps.OrgsConfig',
     'rest_framework',
     'drf_multiple_model',
-    'corsheaders'
+    'corsheaders',
+    'graphene_django'
 ]
 
 MIDDLEWARE = [
@@ -128,3 +129,7 @@ STATIC_URL = '/static/'
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000'
 ]
+
+GRAPHENE = {
+    'SCHEMA': 'Orgs.schema.schema'
+}
