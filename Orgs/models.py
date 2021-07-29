@@ -21,7 +21,7 @@ class ChronoModel(models.Model):
 
 class SchemaModel(models.Model):
     name = models.CharField(max_length=100)
-    json_schema = models.JSONField(null=True, blank=True)
+    json_schema = models.JSONField(null=True, blank=True, help_text="Form JSON Schema.")
     ui_schema = models.JSONField(null=True, blank=True)
     REACT_JSONSCHEMA_FORM = "RJSF"
     JSONSCHEMA_LIBRARY_CHOICES = [
@@ -43,7 +43,7 @@ class EdgeSchema(SchemaModel):
 
 class NodeSchema(SchemaModel):
     default_display_set = models.ForeignKey("DisplaySet",
-                                            models.SET_NULL,
+                                            on_delete=models.SET_NULL,
                                             blank=True,
                                             null=True,)
 
