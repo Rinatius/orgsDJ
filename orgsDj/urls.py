@@ -39,25 +39,33 @@ router.register(api_v1 + r'edgetypes',
 router.register(api_v1 + r'edgetypes',
                 orgs_app.EdgeTypeViewSet,
                 basename='edgetype')
-router.register(api_v1 + r'display',
+router.register(api_v1 + r'validedges',
+                orgs_app.ValidEdgeViewSet,
+                basename='validedge')
+router.register(api_v1 + r'displays',
                 orgs_app.DisplayViewSet,
                 basename='display')
-router.register(api_v1 + r'displayset',
+router.register(api_v1 + r'displaysets',
                 orgs_app.DisplaySetViewSet,
                 basename='displayset')
-router.register(api_v1 + r'displayorder',
+router.register(api_v1 + r'displayorders',
                 orgs_app.DisplayOrderViewSet,
                 basename='displayorder')
+
 
 openapi_schema_url = path('openapi/', get_schema_view(
     title="Grofiles",
     description="API for Grofiles",
-    version="1.0.0"
+    version="1.0.0",
+    url='/http://127.0.0.1:8000/'
 ), name='openapi-schema')
 
+# openapi_schema_url = path(api_v1 + r'schema/', SpectacularAPIView.as_view(), name='schema')
 
 urlpatterns = [path('admin/',
-               admin.site.urls),
+                    admin.site.urls),
                openapi_schema_url,
+               # path(api_v1 + r'schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+               # path(api_v1 + r'schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
                # path('graphql/', GraphQLView.as_view(graphiql=True))
                ] + router.urls

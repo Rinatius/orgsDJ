@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_multiple_model',
     'corsheaders',
-    'graphene_django'
+    'graphene_django',
+    # 'drf_spectacular'
 ]
 
 MIDDLEWARE = [
@@ -134,3 +135,8 @@ CORS_ORIGIN_WHITELIST = [
 GRAPHENE = {
     'SCHEMA': 'Orgs.schema.schema'
 }
+
+# REST_FRAMEWORK = {
+#     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+# }
+

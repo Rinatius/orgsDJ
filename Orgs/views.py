@@ -1,3 +1,5 @@
+from rest_framework.relations import PrimaryKeyRelatedField
+from rest_framework.schemas.openapi import AutoSchema
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, filters, viewsets
@@ -11,26 +13,95 @@ from .serializer import EdgeTypeSerializer, EdgeSerializer, \
 from drf_multiple_model.views import ObjectMultipleModelAPIView
 
 
+class BaseSchema(AutoSchema):
+    """
+    AutoSchema subclass that knows how to use extra_info.
+    """
+    # def get_responses(self, path, method):
+    #     print(super().get_responses(path, method))
+    #     response = super().get_responses(path, method)
+    #     response_contents = response.get('200', False)
+    #     if response_contents:
+    #         response['200']['links'] = {
+    #             'expandableSchema':
+    #                 {'operationId': 'retrieveNodeSchema',
+    #                                 'parameters':
+    #                                     {'id': '$response.body#/schema'}}}
+    #
+    #     return response
+
+    def get_responses(self, path, method):
+        # print(super().get_responses(path, method))
+        response = super().get_responses(path, method)
+        response_contents = response.get('200', False)
+        if response_contents:
+            links = {}
+            serializer = super().get_serializer(path, method)
+            fields = serializer.get_fields()
+            for field_name, field in fields.items():
+                if isinstance(field, PrimaryKeyRelatedField):
+                    expandable_field_name = 'expandable' + field_name.capitalize()
+                    links[expandable_field_name] = {}
+                    links[expandable_field_name]['operationId'] = 'retrieve' + field.queryset.model.__name__
+                    links[expandable_field_name]['parameters'] = {'id': '$response.body#/' + field_name}
+            if links:
+                response['200']['links'] = links
+
+            print(response)
+            # response['200']['links']['expandableSchema'] = {'operationId': 'retrieveNodeSchema',
+            #                                                 'parameters':
+            #                                                     {'id': '$response.body#/schema'}}
+
+        return response
+
+
+    # def get_serializer(self, path, method):
+    #     serializer = super().get_serializer(path, method)
+    #     fields = serializer.get_fields()
+    #     for key, field in fields.items():
+    #         if isinstance(field, PrimaryKeyRelatedField):
+    #             print(field.queryset)
+    #             print(field.__class__)
+    #             print(field.queryset.model)
+    #             print(key)
+    #             print(field)
+    #             # try:
+    #             #     print(field.queryset)
+    #             #     print(field.__class__)
+    #             #     print(field.queryset.model)
+    #             #     print(key)
+    #             #     print(field)
+    #             # except:
+    #             #     pass
+    #     return serializer
+
+
+# class CustomSchema(BaseSchema):
+#     extra_info = "... some extra info .."
+
 class EdgeTypeViewSet(viewsets.ModelViewSet):
 
+    # schema = BaseSchema()
     serializer_class = EdgeTypeSerializer
     queryset = EdgeSchema.objects.all()
 
 
 class ValidEdgeViewSet(viewsets.ModelViewSet):
 
+    # schema = BaseSchema()
     serializer_class = ValidEdgeTypeSerializer
     queryset = ValidEdge.objects.all()
 
 
 class EdgeViewSet(viewsets.ModelViewSet):
 
+    # schema = BaseSchema()
     serializer_class = EdgeSerializer
     queryset = Edge.objects.all()
 
 
 class NodeViewSet(viewsets.ModelViewSet):
-
+    # schema = BaseSchema()
     serializer_class = NodeSerializer
     queryset = Node.objects.all()
 
@@ -129,20 +200,29 @@ class NodeRelsView(ObjectMultipleModelAPIView):
 
 
 class NodeTypeViewSet(viewsets.ModelViewSet):
+
+    # schema = BaseSchema()
     serializer_class = NodeTypeSerializer
     queryset = NodeSchema.objects.all()
 
 
 class DisplayViewSet(viewsets.ModelViewSet):
+
+    # schema = BaseSchema()
     serializer_class = DisplaySerializer
     queryset = Display.objects.all()
 
 
 class DisplaySetViewSet(viewsets.ModelViewSet):
+
+    schema = BaseSchema()
     serializer_class = DisplaySetSerializer
     queryset = DisplaySet.objects.all()
 
 
 class DisplayOrderViewSet(viewsets.ModelViewSet):
+
+    # schema = BaseSchema()
     serializer_class = DisplayOrderSerializer
     queryset = DisplayOrder.objects.all()
+
