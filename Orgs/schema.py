@@ -3,13 +3,12 @@ from graphene import relay
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 
-from Orgs.models import Tip, TipStructure, Tie, TieStructure, TieStructure, Display, DisplaySet, DisplayOrder
+from Orgs.models import Tip, TipStructure
 
 
 class TipType(DjangoObjectType):
     class Meta:
         model = Tip
-        fields = '__all__'
         filter_fields = ['structure']
         interfaces = (relay.Node, )
 
@@ -17,7 +16,7 @@ class TipType(DjangoObjectType):
 class TipStructureType(DjangoObjectType):
     class Meta:
         model = TipStructure
-        fields = '__all__'
+        filter_fields = []
         interfaces = (relay.Node, )
 
 
