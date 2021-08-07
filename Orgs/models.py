@@ -100,11 +100,10 @@ class Fact(models.Model):
     response_date = models.DateField(blank=True, null=True)
 
     fact_question = models.ForeignKey(FactQuestion, on_delete=models.CASCADE)
-    sources = models.ManyToManyField("Orgs.models.Tip", blank=True, null=True)
+    sources = models.ManyToManyField("Tip", blank=True)
 
     def __str__(self):
-        return (self.fact_question.__str__() + " : " +
-                self.fact_question_set.__str__())
+        return self.fact_question.__str__()
 
 
 class TipStructure(BasicModel):
