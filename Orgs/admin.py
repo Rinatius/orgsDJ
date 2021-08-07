@@ -4,7 +4,6 @@ from .models import TieStructure, TipStructure, TieStructure, \
 
 admin.site.register(TieStructure)
 admin.site.register(TipStructure)
-admin.site.register(TieStructure)
 admin.site.register(Display)
 admin.site.register(DisplaySet)
 admin.site.register(DisplayOrder)

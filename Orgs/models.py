@@ -19,6 +19,14 @@ class ChronoModel(models.Model):
         abstract = True
 
 
+class BasicModel(models.Model):
+    name = models.CharField(max_length=200)
+    description = models.TextField(name="description", blank=True)
+
+    class Meta:
+        abstract = True
+
+
 class SourceRequirementModel(models.Model):
     sources_needed = models.BooleanField(default=False)
 
@@ -42,10 +50,8 @@ class SourceRequirementModel(models.Model):
 #         abstract = True
 
 
-class FactQuestion(SourceRequirementModel):
-    name = models.CharField(max_length=200)
+class FactQuestion(BasicModel, SourceRequirementModel):
     display_name = models.CharField(max_length=200, blank=True)
-    description = models.TextField(blank=True)
     TEXT_FORMAT = "TEXT"
     INT_FORMAT = "INT"
     FLOAT_FORMAT = "FLOAT"
@@ -64,8 +70,7 @@ class FactQuestion(SourceRequirementModel):
         return self.name
 
 
-class FactQuestionSet(models.Model):
-    name = models.CharField(max_length=200)
+class FactQuestionSet(BasicModel):
     fact_questions = models.ManyToManyField(FactQuestion,
                                             through="FactQuestionOrder")
 
@@ -102,8 +107,7 @@ class Fact(models.Model):
                 self.fact_question_set.__str__())
 
 
-class TipStructure(models.Model):
-    name = models.CharField(max_length=200)
+class TipStructure(BasicModel):
     fact_question_set = models.ForeignKey(FactQuestionSet,
                                           on_delete=models.CASCADE,
                                           blank=True,
@@ -119,8 +123,8 @@ class TipStructure(models.Model):
 
 class TieStructure(models.Model):
     fact_question_set = models.ForeignKey(FactQuestionSet,
-                                    on_delete=models.CASCADE,
-                                    related_name="tie_structures")
+                                          on_delete=models.CASCADE,
+                                          related_name="tie_structures")
     left_tip_structure = models.ForeignKey(TipStructure,
                                            on_delete=models.CASCADE,
                                            related_name="right_tie_structures")
@@ -134,9 +138,7 @@ class TieStructure(models.Model):
                 self.right_tip_structure.__str__())
 
 
-class Tip(ChronoModel):
-    name = models.CharField(max_length=200, blank=True)
-    description = models.TextField(name="description", blank=True)
+class Tip(BasicModel, ChronoModel):
     image = models.ImageField(name="image", null=True, blank=True)
     structure = models.ForeignKey(TipStructure, on_delete=models.CASCADE)
 
@@ -154,8 +156,7 @@ class Tie(ChronoModel):
                                   related_name="left_ties")
 
 
-class Display(models.Model):
-    name = models.CharField(max_length=200)
+class Display(BasicModel):
     tip_structure = models.ForeignKey(TipStructure, on_delete=models.CASCADE)
     left_tie_structures = models.ManyToManyField(TieStructure,
                                                  related_name="displays_right")
@@ -185,8 +186,7 @@ class Display(models.Model):
         return self.name
 
 
-class DisplaySet(models.Model):
-    name = models.CharField(max_length=200)
+class DisplaySet(BasicModel):
     tip_structure = models.ForeignKey(TipStructure,
                                       on_delete=models.CASCADE,
                                       related_name="display_sets")
