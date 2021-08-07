@@ -19,42 +19,108 @@ class ChronoModel(models.Model):
         abstract = True
 
 
-class SchemaModel(models.Model):
-    name = models.CharField(max_length=100)
-    json_schema = models.JSONField(null=True, blank=True, help_text="Form JSON Schema.")
-    ui_schema = models.JSONField(null=True, blank=True)
-    REACT_JSONSCHEMA_FORM = "RJSF"
-    JSONSCHEMA_LIBRARY_CHOICES = [
-        (REACT_JSONSCHEMA_FORM, "React JSON Schema Form"),
-    ]
-    jsonschema_library = models.CharField(max_length=4,
-                                          choices=JSONSCHEMA_LIBRARY_CHOICES,
-                                          default=REACT_JSONSCHEMA_FORM)
+class SourceRequirementModel(models.Model):
+    sources_needed = models.BooleanField(default=False)
 
     class Meta:
         abstract = True
 
 
-class EdgeSchema(SchemaModel):
+# class SchemaModel(models.Model):
+#     name = models.CharField(max_length=100)
+#     json_schema = models.JSONField(null=True, blank=True, help_text="Form JSON Schema.")
+#     ui_schema = models.JSONField(null=True, blank=True)
+#     REACT_JSONSCHEMA_FORM = "RJSF"
+#     JSONSCHEMA_LIBRARY_CHOICES = [
+#         (REACT_JSONSCHEMA_FORM, "React JSON Schema Form"),
+#     ]
+#     jsonschema_library = models.CharField(max_length=4,
+#                                           choices=JSONSCHEMA_LIBRARY_CHOICES,
+#                                           default=REACT_JSONSCHEMA_FORM)
+#
+#     class Meta:
+#         abstract = True
+
+
+class FactQuestion(SourceRequirementModel):
+    name = models.CharField(max_length=200)
+    display_name = models.CharField(max_length=200, blank=True)
+    description = models.TextField(blank=True)
+    TEXT_FORMAT = "TEXT"
+    INT_FORMAT = "INT"
+    FLOAT_FORMAT = "FLOAT"
+    DATE_FORMAT = "DATE"
+    FORMAT_CHOICES = [
+        (TEXT_FORMAT, "TEXT"),
+        (INT_FORMAT, "INT"),
+        (FLOAT_FORMAT, "FLOAT"),
+        (DATE_FORMAT, "DATE"),
+    ]
+    input_format = models.CharField(max_length=5,
+                                    choices=FORMAT_CHOICES,
+                                    default=TEXT_FORMAT)
 
     def __str__(self):
         return self.name
 
 
-class NodeSchema(SchemaModel):
+class FactQuestionSet(models.Model):
+    name = models.CharField(max_length=200)
+    fact_questions = models.ManyToManyField(FactQuestion,
+                                            through="FactQuestionOrder")
+
+    def __str__(self):
+        return self.name
+
+
+class FactQuestionOrder(models.Model):
+    order = models.IntegerField()
+    fact_question = models.ForeignKey(FactQuestion, on_delete=models.CASCADE)
+    fact_question_set = models.ForeignKey(FactQuestionSet,
+                                          on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ["fact_question", "fact_question_set"]
+
+    def __str__(self):
+        return (str(self.order) + " " +
+                self.fact_question.__str__() + "@" +
+                self.fact_question_set.__str__())
+
+
+class Fact(models.Model):
+    response_text = models.TextField(blank=True, null=True)
+    response_int = models.IntegerField(blank=True, null=True)
+    response_float = models.FloatField(blank=True, null=True)
+    response_date = models.DateField(blank=True, null=True)
+
+    fact_question = models.ForeignKey(FactQuestion, on_delete=models.CASCADE)
+    sources = models.ManyToManyField("Node", blank=True, null=True)
+
+    def __str__(self):
+        return (self.fact_question.__str__() + " : " +
+                self.fact_question_set.__str__())
+
+
+class NodeSchema(models.Model):
+    name = models.CharField(max_length=200)
+    fact_question_set = models.ForeignKey(FactQuestionSet,
+                                          on_delete=models.CASCADE,
+                                          blank=True,
+                                          null=True)
     default_display_set = models.ForeignKey("DisplaySet",
                                             on_delete=models.SET_NULL,
                                             blank=True,
-                                            null=True,)
+                                            null=True)
 
     def __str__(self):
         return self.name
 
 
-class ValidEdge(models.Model):
-    edge_schema = models.ForeignKey(EdgeSchema,
+class EdgeSchema(models.Model):
+    fact_question_set = models.ForeignKey(FactQuestionSet,
                                     on_delete=models.CASCADE,
-                                    related_name="compatible_node_combos")
+                                    related_name="edges")
     left_node_schema = models.ForeignKey(NodeSchema,
                                          on_delete=models.CASCADE,
                                          related_name="right_valid_edges")
@@ -69,14 +135,13 @@ class ValidEdge(models.Model):
 
 
 class Node(ChronoModel):
+    name = models.CharField(max_length=200, blank=True)
+    description = models.TextField(name="description", blank=True)
+    image = models.ImageField(name="image", null=True, blank=True)
     schema = models.ForeignKey(NodeSchema, on_delete=models.CASCADE)
-    short_name = models.CharField(max_length=200)
-    aliases = models.TextField(blank=True)
-    description = models.TextField(name="description", blank=True, null=True)
-    json_data = models.JSONField(null=True)
 
     def __str__(self):
-        return self.short_name
+        return self.name
 
 
 class Edge(ChronoModel):
@@ -92,9 +157,9 @@ class Edge(ChronoModel):
 class Display(models.Model):
     name = models.CharField(max_length=200)
     parent_node_schema = models.ForeignKey(NodeSchema, on_delete=models.CASCADE)
-    parent_left_valid_edges = models.ManyToManyField(ValidEdge,
+    parent_left_valid_edges = models.ManyToManyField(EdgeSchema,
                                                      related_name="displays_right")
-    parent_right_valid_edges = models.ManyToManyField(ValidEdge,
+    parent_right_valid_edges = models.ManyToManyField(EdgeSchema,
                                                       related_name="displays_left")
     second_level_display = models.ManyToManyField("self",
                                                   symmetrical=False)

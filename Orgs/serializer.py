@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import EdgeSchema, Edge, Node, NodeSchema, ValidEdge, Display, DisplaySet, DisplayOrder
+from .models import EdgeSchema, Edge, Node, NodeSchema, EdgeSchema, Display, DisplaySet, DisplayOrder
 
 
 # Basic write-ready serializers
@@ -52,7 +52,7 @@ class WorkingNodeSerializer(serializers.ModelSerializer):
 class ValidEdgeTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = ValidEdge
+        model = EdgeSchema
         fields = '__all__'
 
 
@@ -61,7 +61,7 @@ class LeftValidEdgeTypeSerializer(serializers.ModelSerializer):
     left_node_type = NodeTypeSerializer(read_only=True)
 
     class Meta:
-        model = ValidEdge
+        model = EdgeSchema
         fields = '__all__'
 
 
@@ -70,7 +70,7 @@ class RightValidEdgeTypeSerializer(serializers.ModelSerializer):
     right_node_type = NodeTypeSerializer(read_only=True)
 
     class Meta:
-        model = ValidEdge
+        model = EdgeSchema
         fields = '__all__'
 
 

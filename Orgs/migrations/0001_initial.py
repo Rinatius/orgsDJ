@@ -64,7 +64,7 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='ValidEdge',
+            name='EdgeSchema',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('edge_schema', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='compatible_node_combos', to='Orgs.edgeschema')),
@@ -85,7 +85,7 @@ class Migration(migrations.Migration):
                 ('end_year_unknown', models.BooleanField(default=False, null=True)),
                 ('end_month_unknown', models.BooleanField(default=False, null=True)),
                 ('end_day_unknown', models.BooleanField(default=False, null=True)),
-                ('short_name', models.CharField(max_length=200)),
+                ('name', models.CharField(max_length=200)),
                 ('aliases', models.TextField(blank=True)),
                 ('description', models.TextField(blank=True, null=True)),
                 ('json_data', models.JSONField(null=True)),
@@ -129,7 +129,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='display',
             name='parent_left_valid_edges',
-            field=models.ManyToManyField(related_name='displays_right', to='Orgs.ValidEdge'),
+            field=models.ManyToManyField(related_name='displays_right', to='Orgs.EdgeSchema'),
         ),
         migrations.AddField(
             model_name='display',
@@ -139,7 +139,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='display',
             name='parent_right_valid_edges',
-            field=models.ManyToManyField(related_name='displays_left', to='Orgs.ValidEdge'),
+            field=models.ManyToManyField(related_name='displays_left', to='Orgs.EdgeSchema'),
         ),
         migrations.AddField(
             model_name='display',

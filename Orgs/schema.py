@@ -2,7 +2,7 @@ import graphene
 from graphene import relay
 from graphene_django import DjangoObjectType
 
-from Orgs.models import Node, NodeSchema, Edge, EdgeSchema, ValidEdge, Display, DisplaySet, DisplayOrder
+from Orgs.models import Node, NodeSchema, Edge, EdgeSchema, EdgeSchema, Display, DisplaySet, DisplayOrder
 
 
 class NodeType(DjangoObjectType):
@@ -31,7 +31,7 @@ class EdgeSchemaType(DjangoObjectType):
 
 class ValidEdgeType(DjangoObjectType):
     class Meta:
-        model = ValidEdge
+        model = EdgeSchema
         fields = '__all__'
 
 

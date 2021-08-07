@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status, filters, viewsets
 from rest_framework.generics import ListAPIView
 from django.db.models import Q
-from .models import EdgeSchema, Edge, Node, NodeSchema, ValidEdge, Display, DisplaySet, DisplayOrder
+from .models import EdgeSchema, Edge, Node, NodeSchema, EdgeSchema, Display, DisplaySet, DisplayOrder
 from .serializer import EdgeTypeSerializer, EdgeSerializer, \
     NodeSerializer, NodeTypeSerializer, ValidEdgeTypeSerializer, LeftEdgeSerializer, RightEdgeSerializer, \
     WorkingNodeSerializer, LeftValidEdgeTypeSerializer, RightValidEdgeTypeSerializer, DisplaySerializer, \
@@ -20,7 +20,7 @@ class EdgeTypeViewSet(viewsets.ModelViewSet):
 class ValidEdgeViewSet(viewsets.ModelViewSet):
 
     serializer_class = ValidEdgeTypeSerializer
-    queryset = ValidEdge.objects.all()
+    queryset = EdgeSchema.objects.all()
 
 
 class EdgeViewSet(viewsets.ModelViewSet):
@@ -41,9 +41,9 @@ class NodeValidEdges(ObjectMultipleModelAPIView):
         pk = self.request.query_params['pk']
         root_node = Node.objects.filter(pk=pk)
         root_node_type = root_node.values_list('schema', flat=True)
-        left_valid_edge_types = ValidEdge.objects \
+        left_valid_edge_types = EdgeSchema.objects \
             .filter(right_node_type__type__in=root_node_type)
-        right_valid_edge_types = ValidEdge.objects\
+        right_valid_edge_types = EdgeSchema.objects\
             .filter(left_node_type__type__in=root_node_type)
 
         querylist = (
