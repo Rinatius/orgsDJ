@@ -131,5 +131,5 @@ CORS_ORIGIN_WHITELIST = [
 ]
 
 GRAPHENE = {
-    'SCHEMA': 'Orgs.schema.schema'
+    'SCHEMA': 'Orgs.structure.structure'
 }

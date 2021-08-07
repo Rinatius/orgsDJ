@@ -95,14 +95,14 @@ class Fact(models.Model):
     response_date = models.DateField(blank=True, null=True)
 
     fact_question = models.ForeignKey(FactQuestion, on_delete=models.CASCADE)
-    sources = models.ManyToManyField("Node", blank=True, null=True)
+    sources = models.ManyToManyField("Orgs.models.Tip", blank=True, null=True)
 
     def __str__(self):
         return (self.fact_question.__str__() + " : " +
                 self.fact_question_set.__str__())
 
 
-class NodeSchema(models.Model):
+class TipStructure(models.Model):
     name = models.CharField(max_length=200)
     fact_question_set = models.ForeignKey(FactQuestionSet,
                                           on_delete=models.CASCADE,
@@ -117,50 +117,50 @@ class NodeSchema(models.Model):
         return self.name
 
 
-class EdgeSchema(models.Model):
+class TieStructure(models.Model):
     fact_question_set = models.ForeignKey(FactQuestionSet,
                                     on_delete=models.CASCADE,
-                                    related_name="edges")
-    left_node_schema = models.ForeignKey(NodeSchema,
-                                         on_delete=models.CASCADE,
-                                         related_name="right_valid_edges")
-    right_node_schema = models.ForeignKey(NodeSchema,
-                                          on_delete=models.CASCADE,
-                                          related_name="left_valid_edges")
+                                    related_name="tie_structures")
+    left_tip_structure = models.ForeignKey(TipStructure,
+                                           on_delete=models.CASCADE,
+                                           related_name="right_tie_structures")
+    right_tip_structure = models.ForeignKey(TipStructure,
+                                            on_delete=models.CASCADE,
+                                            related_name="left_tie_structures")
 
     def __str__(self):
-        return (self.left_node_schema.__str__() + "--" +
-                self.edge_schema.__str__() + "-->" +
-                self.right_node_schema.__str__())
+        return (self.left_tip_structure.__str__() + "--" +
+                self.fact_question_set.__str__() + "-->" +
+                self.right_tip_structure.__str__())
 
 
-class Node(ChronoModel):
+class Tip(ChronoModel):
     name = models.CharField(max_length=200, blank=True)
     description = models.TextField(name="description", blank=True)
     image = models.ImageField(name="image", null=True, blank=True)
-    schema = models.ForeignKey(NodeSchema, on_delete=models.CASCADE)
+    structure = models.ForeignKey(TipStructure, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
 
 
-class Edge(ChronoModel):
-    edge_schema = models.ForeignKey(EdgeSchema, on_delete=models.CASCADE)
-    left_node = models.ForeignKey(Node,
+class Tie(ChronoModel):
+    structure = models.ForeignKey(TieStructure, on_delete=models.CASCADE)
+    left_tip = models.ForeignKey(Tip,
+                                 on_delete=models.CASCADE,
+                                 related_name="right_ties")
+    right_tip = models.ForeignKey(Tip,
                                   on_delete=models.CASCADE,
-                                  related_name="right_edges")
-    right_node = models.ForeignKey(Node,
-                                   on_delete=models.CASCADE,
-                                   related_name="left_edges")
+                                  related_name="left_ties")
 
 
 class Display(models.Model):
     name = models.CharField(max_length=200)
-    parent_node_schema = models.ForeignKey(NodeSchema, on_delete=models.CASCADE)
-    parent_left_valid_edges = models.ManyToManyField(EdgeSchema,
-                                                     related_name="displays_right")
-    parent_right_valid_edges = models.ManyToManyField(EdgeSchema,
-                                                      related_name="displays_left")
+    tip_structure = models.ForeignKey(TipStructure, on_delete=models.CASCADE)
+    left_tie_structures = models.ManyToManyField(TieStructure,
+                                                 related_name="displays_right")
+    right_tie_structures = models.ManyToManyField(TieStructure,
+                                                  related_name="displays_left")
     second_level_display = models.ManyToManyField("self",
                                                   symmetrical=False)
     GRAPH = "GR"
@@ -187,9 +187,9 @@ class Display(models.Model):
 
 class DisplaySet(models.Model):
     name = models.CharField(max_length=200)
-    node_schema = models.ForeignKey(NodeSchema,
-                                    on_delete=models.CASCADE,
-                                    related_name="display_sets")
+    tip_structure = models.ForeignKey(TipStructure,
+                                      on_delete=models.CASCADE,
+                                      related_name="display_sets")
     displays = models.ManyToManyField(Display, through="DisplayOrder")
 
     def __str__(self):

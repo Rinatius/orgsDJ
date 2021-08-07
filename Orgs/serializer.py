@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import EdgeSchema, Edge, Node, NodeSchema, EdgeSchema, Display, DisplaySet, DisplayOrder
+from .models import TieStructure, Tie, Tip, TipStructure, TieStructure, Display, DisplaySet, DisplayOrder
 
 
 # Basic write-ready serializers
@@ -8,21 +8,21 @@ from .models import EdgeSchema, Edge, Node, NodeSchema, EdgeSchema, Display, Dis
 class EdgeTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = EdgeSchema
+        model = TieStructure
         fields = '__all__'
 
 
 class EdgeSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Edge
+        model = Tie
         fields = '__all__'
 
 
 class NodeTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = NodeSchema
+        model = TipStructure
         fields = '__all__'
 
 
@@ -37,7 +37,7 @@ class NodeSerializer(serializers.ModelSerializer):
     #         return PersonSerializer(instance=instance).data
 
     class Meta:
-        model = Node
+        model = Tip
         fields = '__all__'
 
 
@@ -45,14 +45,14 @@ class WorkingNodeSerializer(serializers.ModelSerializer):
     node_type = NodeTypeSerializer(read_only=True)
 
     class Meta:
-        model = Node
+        model = Tip
         fields = '__all__'
 
 
 class ValidEdgeTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = EdgeSchema
+        model = TieStructure
         fields = '__all__'
 
 
@@ -61,7 +61,7 @@ class LeftValidEdgeTypeSerializer(serializers.ModelSerializer):
     left_node_type = NodeTypeSerializer(read_only=True)
 
     class Meta:
-        model = EdgeSchema
+        model = TieStructure
         fields = '__all__'
 
 
@@ -70,7 +70,7 @@ class RightValidEdgeTypeSerializer(serializers.ModelSerializer):
     right_node_type = NodeTypeSerializer(read_only=True)
 
     class Meta:
-        model = EdgeSchema
+        model = TieStructure
         fields = '__all__'
 
 
@@ -78,7 +78,7 @@ class LeftEdgeSerializer(serializers.ModelSerializer):
     left_node = NodeSerializer(read_only=True)
 
     class Meta:
-        model = Edge
+        model = Tie
         fields = '__all__'
 
 
@@ -86,7 +86,7 @@ class RightEdgeSerializer(serializers.ModelSerializer):
     right_node = NodeSerializer(read_only=True)
 
     class Meta:
-        model = Edge
+        model = Tie
         fields = '__all__'
 
 
@@ -96,7 +96,7 @@ class NodeRelsSerializer(serializers.ModelSerializer):
     left_edges__left_node = NodeSerializer(many=True, read_only=True)
 
     class Meta:
-        model = Node
+        model = Tip
         fields = '__all__'
 
 

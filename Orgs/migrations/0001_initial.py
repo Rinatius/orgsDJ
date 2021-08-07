@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='EdgeSchema',
+            name='TieStructure',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=100)),
@@ -50,7 +50,7 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='NodeSchema',
+            name='TipStructure',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=100)),
@@ -64,16 +64,16 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='EdgeSchema',
+            name='TieStructure',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('edge_schema', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='compatible_node_combos', to='Orgs.edgeschema')),
-                ('left_node_schema', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='right_valid_edges', to='Orgs.nodeschema')),
-                ('right_node_schema', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='left_valid_edges', to='Orgs.nodeschema')),
+                ('structure', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='compatible_node_combos', to='Orgs.edgeschema')),
+                ('left_tip_structure', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='right_valid_edges', to='Orgs.nodeschema')),
+                ('right_tip_structure', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='left_valid_edges', to='Orgs.nodeschema')),
             ],
         ),
         migrations.CreateModel(
-            name='Node',
+            name='Tip',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('start_date', models.DateField(null=True)),
@@ -89,14 +89,14 @@ class Migration(migrations.Migration):
                 ('aliases', models.TextField(blank=True)),
                 ('description', models.TextField(blank=True, null=True)),
                 ('json_data', models.JSONField(null=True)),
-                ('schema', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='Orgs.nodeschema')),
+                ('structure', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='Orgs.nodeschema')),
             ],
             options={
                 'abstract': False,
             },
         ),
         migrations.CreateModel(
-            name='Edge',
+            name='Tie',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('start_date', models.DateField(null=True)),
@@ -108,9 +108,9 @@ class Migration(migrations.Migration):
                 ('end_year_unknown', models.BooleanField(default=False, null=True)),
                 ('end_month_unknown', models.BooleanField(default=False, null=True)),
                 ('end_day_unknown', models.BooleanField(default=False, null=True)),
-                ('edge_schema', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='Orgs.edgeschema')),
-                ('left_node', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='right_edges', to='Orgs.node')),
-                ('right_node', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='left_edges', to='Orgs.node')),
+                ('structure', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='Orgs.edgeschema')),
+                ('left_tip', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='right_edges', to='Orgs.node')),
+                ('right_tip', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='left_edges', to='Orgs.node')),
             ],
             options={
                 'abstract': False,
@@ -118,7 +118,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='displayset',
-            name='node_schema',
+            name='tip_structure',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='display_sets', to='Orgs.nodeschema'),
         ),
         migrations.AddField(
@@ -128,18 +128,18 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='display',
-            name='parent_left_valid_edges',
-            field=models.ManyToManyField(related_name='displays_right', to='Orgs.EdgeSchema'),
+            name='left_tie_structures',
+            field=models.ManyToManyField(related_name='displays_right', to='Orgs.TieStructure'),
         ),
         migrations.AddField(
             model_name='display',
-            name='parent_node_schema',
+            name='tip_structure',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='Orgs.nodeschema'),
         ),
         migrations.AddField(
             model_name='display',
-            name='parent_right_valid_edges',
-            field=models.ManyToManyField(related_name='displays_left', to='Orgs.EdgeSchema'),
+            name='right_tie_structures',
+            field=models.ManyToManyField(related_name='displays_left', to='Orgs.TieStructure'),
         ),
         migrations.AddField(
             model_name='display',

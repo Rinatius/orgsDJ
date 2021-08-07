@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status, filters, viewsets
 from rest_framework.generics import ListAPIView
 from django.db.models import Q
-from .models import EdgeSchema, Edge, Node, NodeSchema, EdgeSchema, Display, DisplaySet, DisplayOrder
+from .models import TieStructure, Tie, Tip, TipStructure, TieStructure, Display, DisplaySet, DisplayOrder
 from .serializer import EdgeTypeSerializer, EdgeSerializer, \
     NodeSerializer, NodeTypeSerializer, ValidEdgeTypeSerializer, LeftEdgeSerializer, RightEdgeSerializer, \
     WorkingNodeSerializer, LeftValidEdgeTypeSerializer, RightValidEdgeTypeSerializer, DisplaySerializer, \
@@ -14,36 +14,36 @@ from drf_multiple_model.views import ObjectMultipleModelAPIView
 class EdgeTypeViewSet(viewsets.ModelViewSet):
 
     serializer_class = EdgeTypeSerializer
-    queryset = EdgeSchema.objects.all()
+    queryset = TieStructure.objects.all()
 
 
 class ValidEdgeViewSet(viewsets.ModelViewSet):
 
     serializer_class = ValidEdgeTypeSerializer
-    queryset = EdgeSchema.objects.all()
+    queryset = TieStructure.objects.all()
 
 
 class EdgeViewSet(viewsets.ModelViewSet):
 
     serializer_class = EdgeSerializer
-    queryset = Edge.objects.all()
+    queryset = Tie.objects.all()
 
 
 class NodeViewSet(viewsets.ModelViewSet):
 
     serializer_class = NodeSerializer
-    queryset = Node.objects.all()
+    queryset = Tip.objects.all()
 
     
 class NodeValidEdges(ObjectMultipleModelAPIView):
 
     def get_querylist(self):
         pk = self.request.query_params['pk']
-        root_node = Node.objects.filter(pk=pk)
-        root_node_type = root_node.values_list('schema', flat=True)
-        left_valid_edge_types = EdgeSchema.objects \
+        root_node = Tip.objects.filter(pk=pk)
+        root_node_type = root_node.values_list('structure', flat=True)
+        left_valid_edge_types = TieStructure.objects \
             .filter(right_node_type__type__in=root_node_type)
-        right_valid_edge_types = EdgeSchema.objects\
+        right_valid_edge_types = TieStructure.objects\
             .filter(left_node_type__type__in=root_node_type)
 
         querylist = (
@@ -65,13 +65,13 @@ class NodeRelsView(ObjectMultipleModelAPIView):
 
     def get_querylist(self):
         pk = self.request.query_params['pk']
-        root_node = Node.objects.filter(pk=pk)
-        left_edges = Edge.objects.filter(right_node_id=pk)
-        right_edges = Edge.objects.filter(left_node_id=pk)
-        left_nodes_ids = left_edges.values_list('left_node', flat=True)
-        right_nodes_ids = right_edges.values_list('right_node', flat=True)
+        root_node = Tip.objects.filter(pk=pk)
+        left_edges = Tie.objects.filter(right_node_id=pk)
+        right_edges = Tie.objects.filter(left_node_id=pk)
+        left_nodes_ids = left_edges.values_list('left_tip', flat=True)
+        right_nodes_ids = right_edges.values_list('right_tip', flat=True)
         n_nodes_ids = left_nodes_ids.union(right_nodes_ids)
-        n_nodes_edges = Edge.objects.filter(left_node_id__in=n_nodes_ids) \
+        n_nodes_edges = Tie.objects.filter(left_node_id__in=n_nodes_ids) \
             .filter(right_node_id__in=n_nodes_ids)
 
         querylist = (
@@ -93,31 +93,31 @@ class NodeRelsView(ObjectMultipleModelAPIView):
 
     # def get(self, request, pk, format=None):
     #     # try:
-    #     #     node = Node.objects.get(pk=pk).prefetch_related('left_edges',
+    #     #     node = Tip.objects.get(pk=pk).prefetch_related('left_edges',
     #     #                                                     'right_edges')
     #     #     #serializer = EdgeTypeSerializer(objects)
     #     #     return Response(node.json_data)
     #     # except:
     #     #     return Response(status=status.HTTP_404_NOT_FOUND)
     #
-    #     #node = Node.objects.get(pk=pk)
-    #     root_node = Node.objects.filter(pk=pk)
-    #     # edges = Edge.objects.filter(Q(left_node_id=pk) | Q(right_node_id=pk))
-    #     left_edges = Edge.objects.filter(right_node_id=pk)
-    #     right_edges = Edge.objects.filter(left_node_id=pk)
-    #     left_nodes_ids = left_edges.values_list('left_node_schema', flat=True)
-    #     right_nodes_ids = right_edges.values_list('right_node_schema', flat=True)
+    #     #node = Tip.objects.get(pk=pk)
+    #     root_node = Tip.objects.filter(pk=pk)
+    #     # edges = Tie.objects.filter(Q(left_node_id=pk) | Q(right_node_id=pk))
+    #     left_edges = Tie.objects.filter(right_node_id=pk)
+    #     right_edges = Tie.objects.filter(left_node_id=pk)
+    #     left_nodes_ids = left_edges.values_list('left_tip_structure', flat=True)
+    #     right_nodes_ids = right_edges.values_list('right_tip_structure', flat=True)
     #     n_nodes_ids = left_nodes_ids.union(right_nodes_ids)
-    #     n_nodes = Node.objects.filter(id__in=n_nodes_ids)
-    #     n_nodes_edges = Edge.objects.filter(left_node_id__in=n_nodes_ids)\
+    #     n_nodes = Tip.objects.filter(id__in=n_nodes_ids)
+    #     n_nodes_edges = Tie.objects.filter(left_node_id__in=n_nodes_ids)\
     #                                 .filter(right_node_id__in=n_nodes_ids)
-    #     # n_nodes_edges1 = Edge.objects.filter(left_node_id__in=n_nodes_ids)\
+    #     # n_nodes_edges1 = Tie.objects.filter(left_node_id__in=n_nodes_ids)\
     #     #                              .exclude(right_node_id=pk)
-    #     # n_nodes_edges2 = Edge.objects.filter(right_node_id__in=n_nodes_ids) \
+    #     # n_nodes_edges2 = Tie.objects.filter(right_node_id__in=n_nodes_ids) \
     #     #     .exclude(left_node_id=pk)
     #     # intersect = n_nodes_edges1.intersection(n_nodes_edges2)
     #     # neighbor_nodes =
-    #     # neighbor_nodes = Node.objects\
+    #     # neighbor_nodes = Tip.objects\
     #     #                      .filter(Q(left_edges__left_node_id=pk) |
     #     #                              Q(right_edges__right_node_id=pk))\
     #     #                      .distinct()
@@ -130,7 +130,7 @@ class NodeRelsView(ObjectMultipleModelAPIView):
 
 class NodeTypeViewSet(viewsets.ModelViewSet):
     serializer_class = NodeTypeSerializer
-    queryset = NodeSchema.objects.all()
+    queryset = TipStructure.objects.all()
 
 
 class DisplayViewSet(viewsets.ModelViewSet):

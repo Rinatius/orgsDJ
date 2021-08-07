@@ -2,36 +2,36 @@ import graphene
 from graphene import relay
 from graphene_django import DjangoObjectType
 
-from Orgs.models import Node, NodeSchema, Edge, EdgeSchema, EdgeSchema, Display, DisplaySet, DisplayOrder
+from Orgs.models import Tip, TipStructure, Tie, TieStructure, TieStructure, Display, DisplaySet, DisplayOrder
 
 
 class NodeType(DjangoObjectType):
     class Meta:
-        model = Node
+        model = Tip
         fields = '__all__'
 
 
 class NodeSchemaType(DjangoObjectType):
     class Meta:
-        model = NodeSchema
+        model = TipStructure
         fields = '__all__'
 
 
 class EdgeType(DjangoObjectType):
     class Meta:
-        model = Edge
+        model = Tie
         fields = '__all__'
 
 
 class EdgeSchemaType(DjangoObjectType):
     class Meta:
-        model = EdgeSchema
+        model = TieStructure
         fields = '__all__'
 
 
 class ValidEdgeType(DjangoObjectType):
     class Meta:
-        model = EdgeSchema
+        model = TieStructure
         fields = '__all__'
 
 
@@ -59,12 +59,12 @@ class Query(graphene.ObjectType):
 
     def resolve_all_nodes(root, info):
         # We can easily optimize query count in the resolve method
-        return Node.objects.all()
+        return Tip.objects.all()
 
     # def resolve_node_schema_by_name(root, info, name):
     #     try:
-    #         return NodeSchema.objects.get(name=name)
-    #     except NodeSchema.DoesNotExist:
+    #         return TipStructure.objects.get(name=name)
+    #     except TipStructure.DoesNotExist:
     #         return None
 
 
