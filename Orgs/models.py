@@ -50,7 +50,7 @@ class SourceRequirementModel(models.Model):
 #         abstract = True
 
 
-class FactQuestion(BasicModel, SourceRequirementModel):
+class Question(BasicModel, SourceRequirementModel):
     display_name = models.CharField(max_length=200, blank=True)
     TEXT_FORMAT = "TEXT"
     INT_FORMAT = "INT"
@@ -65,32 +65,13 @@ class FactQuestion(BasicModel, SourceRequirementModel):
     input_format = models.CharField(max_length=5,
                                     choices=FORMAT_CHOICES,
                                     default=TEXT_FORMAT)
-
-    def __str__(self):
-        return self.name
-
-
-class FactQuestionSet(BasicModel):
-    fact_questions = models.ManyToManyField(FactQuestion,
-                                            through="FactQuestionOrder")
-
-    def __str__(self):
-        return self.name
-
-
-class FactQuestionOrder(models.Model):
     order = models.IntegerField()
-    fact_question = models.ForeignKey(FactQuestion, on_delete=models.CASCADE)
-    fact_question_set = models.ForeignKey(FactQuestionSet,
-                                          on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = ["fact_question", "fact_question_set"]
+        abstract = True
 
     def __str__(self):
-        return (str(self.order) + " " +
-                self.fact_question.__str__() + "@" +
-                self.fact_question_set.__str__())
+        return self.name
 
 
 class Fact(models.Model):
@@ -99,18 +80,13 @@ class Fact(models.Model):
     response_float = models.FloatField(blank=True, null=True)
     response_date = models.DateField(blank=True, null=True)
 
-    fact_question = models.ForeignKey(FactQuestion, on_delete=models.CASCADE)
     sources = models.ManyToManyField("Tip", blank=True)
 
-    def __str__(self):
-        return self.fact_question.__str__()
+    class Meta:
+        abstract = True
 
 
 class TipStructure(BasicModel):
-    fact_question_set = models.ForeignKey(FactQuestionSet,
-                                          on_delete=models.CASCADE,
-                                          blank=True,
-                                          null=True)
     default_display_set = models.ForeignKey("DisplaySet",
                                             on_delete=models.SET_NULL,
                                             blank=True,
@@ -120,10 +96,7 @@ class TipStructure(BasicModel):
         return self.name
 
 
-class TieStructure(models.Model):
-    fact_question_set = models.ForeignKey(FactQuestionSet,
-                                          on_delete=models.CASCADE,
-                                          related_name="tie_structures")
+class TieStructure(BasicModel):
     left_tip_structure = models.ForeignKey(TipStructure,
                                            on_delete=models.CASCADE,
                                            related_name="right_tie_structures")
@@ -133,7 +106,7 @@ class TieStructure(models.Model):
 
     def __str__(self):
         return (self.left_tip_structure.__str__() + "--" +
-                self.fact_question_set.__str__() + "-->" +
+                self.name + "-->" +
                 self.right_tip_structure.__str__())
 
 
@@ -153,6 +126,36 @@ class Tie(ChronoModel):
     right_tip = models.ForeignKey(Tip,
                                   on_delete=models.CASCADE,
                                   related_name="left_ties")
+
+
+class TipQuestion(Question):
+    tip_structure = models.ForeignKey(TipStructure,
+                                      on_delete=models.CASCADE,
+                                      related_name="questions")
+
+
+class TieQuestion(Question):
+    tie_structure = models.ForeignKey(TieStructure,
+                                      on_delete=models.CASCADE,
+                                      related_name="questions")
+
+
+class TipFact(Question):
+    tip_question = models.ForeignKey(TipQuestion,
+                                     on_delete=models.CASCADE,
+                                     related_name="facts")
+    tip = models.ForeignKey(Tip,
+                            on_delete=models.CASCADE,
+                            related_name="facts")
+
+
+class TieFact(Question):
+    tie_question = models.ForeignKey(TieQuestion,
+                                     on_delete=models.CASCADE,
+                                     related_name="facts")
+    tie = models.ForeignKey(Tie,
+                            on_delete=models.CASCADE,
+                            related_name="facts")
 
 
 class Display(BasicModel):
