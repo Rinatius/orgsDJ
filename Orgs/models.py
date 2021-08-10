@@ -140,7 +140,7 @@ class TieQuestion(Question):
                                       related_name="questions")
 
 
-class TipFact(Question):
+class TipFact(Fact):
     tip_question = models.ForeignKey(TipQuestion,
                                      on_delete=models.CASCADE,
                                      related_name="facts")
@@ -149,7 +149,7 @@ class TipFact(Question):
                             related_name="facts")
 
 
-class TieFact(Question):
+class TieFact(Fact):
     tie_question = models.ForeignKey(TieQuestion,
                                      on_delete=models.CASCADE,
                                      related_name="facts")
