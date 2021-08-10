@@ -87,10 +87,10 @@ class Fact(models.Model):
 
 
 class TipStructure(BasicModel):
-    default_display_set = models.ForeignKey("DisplaySet",
-                                            on_delete=models.SET_NULL,
-                                            blank=True,
-                                            null=True)
+    default_display_collection = models.ForeignKey("DisplayCollection",
+                                                   on_delete=models.SET_NULL,
+                                                   blank=True,
+                                                   null=True)
 
     def __str__(self):
         return self.name
@@ -188,10 +188,10 @@ class Display(BasicModel):
         return self.name
 
 
-class DisplaySet(BasicModel):
+class DisplayCollection(BasicModel):
     tip_structure = models.ForeignKey(TipStructure,
                                       on_delete=models.CASCADE,
-                                      related_name="display_sets")
+                                      related_name="display_collections")
     displays = models.ManyToManyField(Display, through="DisplayOrder")
 
     def __str__(self):
@@ -201,12 +201,12 @@ class DisplaySet(BasicModel):
 class DisplayOrder(models.Model):
     order = models.IntegerField()
     display = models.ForeignKey(Display, on_delete=models.CASCADE)
-    display_set = models.ForeignKey(DisplaySet, on_delete=models.CASCADE)
+    display_collection = models.ForeignKey(DisplayCollection, on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = ["display", "display_set"]
+        unique_together = ["display", "display_collection"]
 
     def __str__(self):
         return (str(self.order) + " " +
                 self.display.__str__() + "@" +
-                self.display_set.__str__())
+                self.display_collection.__str__())

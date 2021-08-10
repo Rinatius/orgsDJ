@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='DisplaySet',
+            name='DisplayCollection',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=200)),
@@ -89,7 +89,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=200)),
                 ('description', models.TextField(blank=True)),
-                ('default_display_set', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='Orgs.displayset')),
+                ('default_display_collection', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='Orgs.displayset')),
             ],
             options={
                 'abstract': False,
@@ -197,11 +197,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='displayset',
             name='tip_structure',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='display_sets', to='Orgs.tipstructure'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='display_collections', to='Orgs.tipstructure'),
         ),
         migrations.AddField(
             model_name='displayorder',
-            name='display_set',
+            name='display_collection',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='Orgs.displayset'),
         ),
         migrations.AddField(
@@ -226,6 +226,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='displayorder',
-            unique_together={('display', 'display_set')},
+            unique_together={('display', 'display_collection')},
         ),
     ]

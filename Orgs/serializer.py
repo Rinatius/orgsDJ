@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import TieStructure, Tie, Tip, TipStructure, TieStructure, Display, DisplaySet, DisplayOrder
+from .models import TieStructure, Tie, Tip, TipStructure, TieStructure, Display, DisplayCollection, DisplayOrder
 
 
 # Basic write-ready serializers
@@ -110,7 +110,7 @@ class DisplaySerializer(serializers.ModelSerializer):
 class DisplaySetSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = DisplaySet
+        model = DisplayCollection
         fields = '__all__'
 
 

@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status, filters, viewsets
 from rest_framework.generics import ListAPIView
 from django.db.models import Q
-from .models import TieStructure, Tie, Tip, TipStructure, TieStructure, Display, DisplaySet, DisplayOrder
+from .models import TieStructure, Tie, Tip, TipStructure, TieStructure, Display, DisplayCollection, DisplayOrder
 from .serializer import EdgeTypeSerializer, EdgeSerializer, \
     NodeSerializer, NodeTypeSerializer, ValidEdgeTypeSerializer, LeftEdgeSerializer, RightEdgeSerializer, \
     WorkingNodeSerializer, LeftValidEdgeTypeSerializer, RightValidEdgeTypeSerializer, DisplaySerializer, \
@@ -140,7 +140,7 @@ class DisplayViewSet(viewsets.ModelViewSet):
 
 class DisplaySetViewSet(viewsets.ModelViewSet):
     serializer_class = DisplaySetSerializer
-    queryset = DisplaySet.objects.all()
+    queryset = DisplayCollection.objects.all()
 
 
 class DisplayOrderViewSet(viewsets.ModelViewSet):
