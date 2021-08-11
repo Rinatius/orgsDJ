@@ -67,9 +67,6 @@ class Question(BasicModel, SourceRequirementModel):
                                     default=TEXT_FORMAT)
     order = models.IntegerField()
 
-    class Meta:
-        abstract = True
-
     def __str__(self):
         return self.name
 
@@ -80,10 +77,20 @@ class Fact(models.Model):
     response_float = models.FloatField(blank=True, null=True)
     response_date = models.DateField(blank=True, null=True)
 
+    question = models.ForeignKey(Question,
+                                 on_delete=models.CASCADE,
+                                 related_name="facts")
     sources = models.ManyToManyField("Tip", blank=True)
-
-    class Meta:
-        abstract = True
+    tie = models.ForeignKey("Tie",
+                            blank=True,
+                            null=True,
+                            on_delete=models.CASCADE,
+                            related_name="facts")
+    tip = models.ForeignKey("Tip",
+                            blank=True,
+                            null=True,
+                            on_delete=models.CASCADE,
+                            related_name="facts")
 
 
 class TipStructure(BasicModel):
@@ -91,6 +98,7 @@ class TipStructure(BasicModel):
                                                    on_delete=models.SET_NULL,
                                                    blank=True,
                                                    null=True)
+    questions = models.ManyToManyField(Question, through="TipQuestionOrder")
 
     def __str__(self):
         return self.name
@@ -103,6 +111,7 @@ class TieStructure(BasicModel):
     right_tip_structure = models.ForeignKey(TipStructure,
                                             on_delete=models.CASCADE,
                                             related_name="left_tie_structures")
+    questions = models.ManyToManyField(Question, through="TieQuestionOrder")
 
     def __str__(self):
         return (self.left_tip_structure.__str__() + "--" +
@@ -128,34 +137,36 @@ class Tie(ChronoModel):
                                   related_name="left_ties")
 
 
-class TipQuestion(Question):
+class TipQuestionOrder(models.Model):
+    order = models.IntegerField()
     tip_structure = models.ForeignKey(TipStructure,
-                                      on_delete=models.CASCADE,
-                                      related_name="questions")
+                                      on_delete=models.CASCADE)
+    question = models.ForeignKey(Question,
+                                 on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ["tip_structure", "question"]
+
+    def __str__(self):
+        return (str(self.order) + " " +
+                self.question.__str__() + "@" +
+                self.tip_structure.__str__())
 
 
-class TieQuestion(Question):
+class TieQuestionOrder(models.Model):
+    order = models.IntegerField()
     tie_structure = models.ForeignKey(TieStructure,
-                                      on_delete=models.CASCADE,
-                                      related_name="questions")
+                                      on_delete=models.CASCADE)
+    question = models.ForeignKey(Question,
+                                 on_delete=models.CASCADE)
 
+    class Meta:
+        unique_together = ["tie_structure", "question"]
 
-class TipFact(Fact):
-    tip_question = models.ForeignKey(TipQuestion,
-                                     on_delete=models.CASCADE,
-                                     related_name="facts")
-    tip = models.ForeignKey(Tip,
-                            on_delete=models.CASCADE,
-                            related_name="facts")
-
-
-class TieFact(Fact):
-    tie_question = models.ForeignKey(TieQuestion,
-                                     on_delete=models.CASCADE,
-                                     related_name="facts")
-    tie = models.ForeignKey(Tie,
-                            on_delete=models.CASCADE,
-                            related_name="facts")
+    def __str__(self):
+        return (str(self.order) + " " +
+                self.question.__str__() + "@" +
+                self.tie_structure.__str__())
 
 
 class Display(BasicModel):
@@ -200,8 +211,10 @@ class DisplayCollection(BasicModel):
 
 class DisplayOrder(models.Model):
     order = models.IntegerField()
-    display = models.ForeignKey(Display, on_delete=models.CASCADE)
-    display_collection = models.ForeignKey(DisplayCollection, on_delete=models.CASCADE)
+    display = models.ForeignKey(Display,
+                                on_delete=models.CASCADE)
+    display_collection = models.ForeignKey(DisplayCollection,
+                                           on_delete=models.CASCADE)
 
     class Meta:
         unique_together = ["display", "display_collection"]

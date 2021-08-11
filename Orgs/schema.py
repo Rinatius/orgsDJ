@@ -1,10 +1,65 @@
 import graphene
-from graphene import relay
+from graphene import relay, Interface
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 
-from Orgs.models import Tip, TipStructure, Tie, TipQuestion, TieQuestion, TipFact, TieFact, Display, DisplayOrder, \
-    DisplayCollection, TieStructure
+from Orgs.models import Tip, TipStructure, Tie, TipQuestion, TieQuestion, \
+    TipFact, TieFact, Display, DisplayOrder, \
+    DisplayCollection, TieStructure, Fact
+
+
+class FactAbstractType(DjangoObjectType):
+    class Meta:
+        model = Fact
+
+
+class TipType(DjangoObjectType):
+    class Meta:
+        model = Tip
+        fields = "__all__"
+
+    facts = graphene.List("TipFactInterface")
+    def resolve_facts(root, info, **kwargs):
+        return TipFact.objects.all()
+
+
+class TipQuestionType(DjangoObjectType):
+    class Meta:
+        model = TipQuestion
+        fields = "__all__"
+
+
+class FactInterface(Interface):
+    sources = graphene.List(TipType)
+
+
+class TipFactInterface(FactInterface):
+    tip_question = graphene.Field(TipQuestionType)
+    tip = graphene.Field(TipType)
+
+
+class IntTipFact(DjangoObjectType):
+    class Meta:
+        model = TipFact
+        exclude = ("response_text", "response_float", "response_date")
+
+
+class TextTipFact(DjangoObjectType):
+    class Meta:
+        model = TipFact
+        exclude = ("response_int", "response_float", "response_date")
+
+
+class FloatTipFact(DjangoObjectType):
+    class Meta:
+        model = TipFact
+        exclude = ("response_text", "response_int", "response_date")
+
+
+class DateTipFact(DjangoObjectType):
+    class Meta:
+        model = TipFact
+        exclude = ("response_text", "response_int", "response_float")
 
 
 # class TipNode(DjangoObjectType):
@@ -165,4 +220,4 @@ class Mutation(graphene.ObjectType):
     pass
 
 
-schema = graphene.Schema(query=Query, mutation=Mutation)
+# schema = graphene.Schema(query=Query, mutation=Mutation)
