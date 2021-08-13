@@ -131,7 +131,8 @@ CORS_ORIGIN_WHITELIST = [
 ]
 
 GRAPHENE = {
-    'SCHEMA': 'Orgs.schema.schema'
+    #'SCHEMA': 'Orgs.schema.schema'
+    'SCHEMA': 'Orgs.schemarelay.schema'
 }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

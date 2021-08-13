@@ -1,0 +1,10 @@
+TEXT_FORMAT = "TEXT"
+INT_FORMAT = "INT"
+FLOAT_FORMAT = "FLOAT"
+DATE_FORMAT = "DATE"
+FORMAT_CHOICES = [
+        (TEXT_FORMAT, "TEXT"),
+        (INT_FORMAT, "INT"),
+        (FLOAT_FORMAT, "FLOAT"),
+        (DATE_FORMAT, "DATE"),
+    ]

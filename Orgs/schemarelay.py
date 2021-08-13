@@ -12,6 +12,7 @@ class QuestionNode(DjangoObjectType):
     class Meta:
         model = Question
         filter_fields = []
+        interfaces = (relay.Node, )
 
 
 class FactInterface(Interface):
@@ -22,8 +23,8 @@ class FactInterface(Interface):
 class IntFactNode(DjangoObjectType):
     class Meta:
         model = Fact
-        fields = ("data", )
-        interfaces = (FactInterface, )
+        fields = ("data", "question")
+        interfaces = (relay.Node, )
 
     data = graphene.Int()
 
@@ -34,8 +35,8 @@ class IntFactNode(DjangoObjectType):
 class FloatFactNode(DjangoObjectType):
     class Meta:
         model = Fact
-        fields = ("data",)
-        interfaces = (FactInterface, )
+        fields = ("data", "question")
+        interfaces = (relay.Node, )
 
     data = graphene.Float()
 
@@ -46,8 +47,8 @@ class FloatFactNode(DjangoObjectType):
 class TextFactNode(DjangoObjectType):
     class Meta:
         model = Fact
-        fields = ("data",)
-        interfaces = (FactInterface, )
+        fields = ("data", "question")
+        interfaces = (relay.Node, )
 
     data = graphene.String()
 
@@ -58,8 +59,8 @@ class TextFactNode(DjangoObjectType):
 class DateFactNode(DjangoObjectType):
     class Meta:
         model = Fact
-        fields = ("data",)
-        interfaces = (relay.Node, FactInterface)
+        fields = ("data", "question")
+        interfaces = (relay.Node, )
 
     data = graphene.Date()
 
@@ -83,34 +84,42 @@ class FactsUnion(graphene.types.Union):
             return TextFactNode
 
 
+class FactConnection(relay.Connection):
+    class Meta:
+        node = FactsUnion
+
+
 class TipNode(DjangoObjectType):
     class Meta:
         model = Tip
         filter_fields = ['structure']
         interfaces = (relay.Node, )
 
-    formatted_facts = graphene.List(FactsUnion)
+    formatted_facts = relay.ConnectionField(FactConnection)
 
-    def resolve_data(instance, info, **kwargs):
-        return instance.facts
+    def resolve_formatted_facts(instance, info, **kwargs):
+        return instance.facts.all()
 
 
 class TipStructureNode(DjangoObjectType):
     class Meta:
         model = TipStructure
         filter_fields = []
+        interfaces = (relay.Node, )
 
 
 class TieNode(DjangoObjectType):
     class Meta:
         model = Tie
         filter_fields = []
+        interfaces = (relay.Node, )
 
 
 class TieStructureNode(DjangoObjectType):
     class Meta:
         model = TieStructure
         filter_fields = []
+        interfaces = (relay.Node, )
 
 
 # class FactData(graphene.Union):
@@ -146,18 +155,23 @@ class DisplayNode(DjangoObjectType):
     class Meta:
         model = Display
         filter_fields = []
+        interfaces = (relay.Node, )
 
 
 class DisplayOrderNode(DjangoObjectType):
     class Meta:
         model = DisplayOrder
         filter_fields = []
+        interfaces = (relay.Node, )
 
 
 class DisplayCollectionNode(DjangoObjectType):
     class Meta:
         model = DisplayCollection
         filter_fields = []
+        interfaces = (relay.Node, )
+
+
 
 
 # class NodeSchemaType(DjangoObjectType):
@@ -203,72 +217,29 @@ class DisplayCollectionNode(DjangoObjectType):
 
 
 class Query(graphene.ObjectType):
-    tip = graphene.Field(TipNode, pk=graphene.Int())
-    tips = graphene.List(TipNode)
+    tip = relay.Node.Field(TipNode)
+    tips = DjangoFilterConnectionField(TipNode)
 
-    tie = graphene.Field(TieNode, pk=graphene.Int())
-    ties = graphene.List(TieNode)
+    tie = relay.Node.Field(TieNode)
+    ties = DjangoFilterConnectionField(TieNode)
 
-    tip_structure = graphene.Field(TipStructureNode, pk=graphene.Int())
-    tip_structures = graphene.List(TipStructureNode)
+    tip_structure = relay.Node.Field(TipStructureNode)
+    tip_structures = DjangoFilterConnectionField(TipStructureNode)
 
-    tie_structure = graphene.Field(TieStructureNode, pk=graphene.Int())
-    tie_structures = graphene.List(TieStructureNode)
+    tie_structure = relay.Node.Field(TieStructureNode)
+    tie_structures = DjangoFilterConnectionField(TieStructureNode)
 
-    question = graphene.Field(QuestionNode, pk=graphene.Int())
-    questions = graphene.List(QuestionNode)
+    question = relay.Node.Field(QuestionNode)
+    questions = DjangoFilterConnectionField(QuestionNode)
 
     # fact = relay.Node.Field(FactInterface)
     # facts = DjangoFilterConnectionField(FactInterface)
 
-    display = graphene.Field(DisplayNode, pk=graphene.Int())
-    displays = graphene.List(DisplayNode)
+    display = relay.Node.Field(DisplayNode)
+    displays = DjangoFilterConnectionField(DisplayNode)
 
-    display_collection = graphene.Field(DisplayCollectionNode, pk=graphene.Int())
-    display_collections = graphene.List(DisplayCollectionNode)
-
-    def resolve_tip(root, info, pk):
-        return Tip.objects.get(pk=pk)
-
-    def resolve_tips(root, info, **kwargs):
-        return Tip.objects.all()
-
-    def resolve_tie(root, info, pk):
-        return Tie.objects.get(pk=pk)
-
-    def resolve_ties(root, info, **kwargs):
-        return Tie.objects.all()
-
-    def resolve_tip_structure(root, info, pk):
-        return TipStructure.objects.get(pk=pk)
-
-    def resolve_tip_structures(root, info, **kwargs):
-        return TipStructure.objects.all()
-
-    def resolve_tie_structure(root, info, pk):
-        return TieStructure.objects.get(pk=pk)
-
-    def resolve_tie_structures(root, info, **kwargs):
-        return TieStructure.objects.all()
-
-    def resolve_question(root, info, pk):
-        return Question.objects.get(pk=pk)
-
-    def resolve_questions(root, info, **kwargs):
-        return Question.objects.all()
-
-    def resolve_display(root, info, pk):
-        return Display.objects.get(pk=pk)
-
-    def resolve_displays(root, info, **kwargs):
-        return Display.objects.all()
-
-    def resolve_display_collection(root, info, pk):
-        return DisplayCollection.objects.get(pk=pk)
-
-    def resolve_display_collections(root, info, **kwargs):
-        return DisplayCollection.objects.all()
-
+    display_collection = relay.Node.Field(DisplayCollectionNode)
+    display_collections = DjangoFilterConnectionField(DisplayCollectionNode)
 
 #
 # class Mutation(graphene.ObjectType):

@@ -1,17 +1,8 @@
 from django.db import models
 
 # Create your models here.
+from Orgs import formats
 
-TEXT_FORMAT = "TEXT"
-INT_FORMAT = "INT"
-FLOAT_FORMAT = "FLOAT"
-DATE_FORMAT = "DATE"
-FORMAT_CHOICES = [
-        (TEXT_FORMAT, "TEXT"),
-        (INT_FORMAT, "INT"),
-        (FLOAT_FORMAT, "FLOAT"),
-        (DATE_FORMAT, "DATE"),
-    ]
 
 class ChronoModel(models.Model):
     start_date = models.DateField(null=True)
@@ -63,8 +54,8 @@ class SourceRequirementModel(models.Model):
 class Question(BasicModel, SourceRequirementModel):
     display_name = models.CharField(max_length=200, blank=True)
     input_format = models.CharField(max_length=5,
-                                    choices=FORMAT_CHOICES,
-                                    default=TEXT_FORMAT)
+                                    choices=formats.FORMAT_CHOICES,
+                                    default=formats.TEXT_FORMAT)
     order = models.IntegerField()
 
     def __str__(self):
@@ -92,13 +83,12 @@ class Fact(models.Model):
                             on_delete=models.CASCADE,
                             related_name="facts")
 
-    @property
-    def data(self):
-        if self.question.input_format == INT_FORMAT:
+    def get_data(self):
+        if self.question.input_format == formats.INT_FORMAT:
             return self.response_int
-        elif self.question.input_format == FLOAT_FORMAT:
+        elif self.question.input_format == formats.FLOAT_FORMAT:
             return self.response_float
-        elif self.question.input_format == DATE_FORMAT:
+        elif self.question.input_format == formats.DATE_FORMAT:
             return self.response_date
         else:
             return self.response_text
