@@ -1,6 +1,6 @@
 import graphene, graphene_django
 from graphene import relay, Interface
-from graphene_django import DjangoObjectType
+from graphene_django import DjangoObjectType, DjangoConnectionField
 from graphene_django.filter import DjangoFilterConnectionField
 
 from Orgs import formats
@@ -15,16 +15,28 @@ class QuestionNode(DjangoObjectType):
         interfaces = (relay.Node, )
 
 
+
 class FactInterface(Interface):
-    question = relay.Node.Field(QuestionNode)
-    #sources = DjangoFilterConnectionField(TipNode)
+    question = graphene.Field(QuestionNode)
+
+    # sources = DjangoFilterConnectionField(TipNode)
+    @classmethod
+    def resolve_type(cls, instance, info):
+        if instance.question.input_format == formats.INT_FORMAT:
+            return IntFactNode
+        elif instance.question.input_format == formats.FLOAT_FORMAT:
+            return FloatFactNode
+        elif instance.question.input_format == formats.DATE_FORMAT:
+            return DateFactNode
+        else:
+            return TextFactNode
 
 
 class IntFactNode(DjangoObjectType):
     class Meta:
         model = Fact
-        fields = ("data", "question")
-        interfaces = (relay.Node, )
+        fields = ("data", )
+        interfaces = (relay.Node, FactInterface,)
 
     data = graphene.Int()
 
@@ -35,8 +47,8 @@ class IntFactNode(DjangoObjectType):
 class FloatFactNode(DjangoObjectType):
     class Meta:
         model = Fact
-        fields = ("data", "question")
-        interfaces = (relay.Node, )
+        fields = ("data", )
+        interfaces = (relay.Node, FactInterface,)
 
     data = graphene.Float()
 
@@ -47,8 +59,8 @@ class FloatFactNode(DjangoObjectType):
 class TextFactNode(DjangoObjectType):
     class Meta:
         model = Fact
-        fields = ("data", "question")
-        interfaces = (relay.Node, )
+        fields = ("data", )
+        interfaces = (relay.Node, FactInterface,)
 
     data = graphene.String()
 
@@ -59,8 +71,8 @@ class TextFactNode(DjangoObjectType):
 class DateFactNode(DjangoObjectType):
     class Meta:
         model = Fact
-        fields = ("data", "question")
-        interfaces = (relay.Node, )
+        fields = ("data", )
+        interfaces = (relay.Node, FactInterface,)
 
     data = graphene.Date()
 
@@ -89,13 +101,18 @@ class FactConnection(relay.Connection):
         node = FactsUnion
 
 
+class FactInterfaceConnection(relay.Connection):
+    class Meta:
+        node = FactInterface
+
+
 class TipNode(DjangoObjectType):
     class Meta:
         model = Tip
         filter_fields = ['structure']
         interfaces = (relay.Node, )
 
-    formatted_facts = relay.ConnectionField(FactConnection)
+    formatted_facts = relay.ConnectionField(FactInterfaceConnection)
 
     def resolve_formatted_facts(instance, info, **kwargs):
         return instance.facts.all()
@@ -246,4 +263,8 @@ class Query(graphene.ObjectType):
 #     pass
 
 
-schema = graphene.Schema(query=Query)
+schema = graphene.Schema(query=Query, types=[IntFactNode,
+                                             TextFactNode,
+                                             DateFactNode,
+                                             FloatFactNode,
+                                             QuestionNode])
