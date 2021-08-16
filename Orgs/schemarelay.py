@@ -16,10 +16,12 @@ class QuestionNode(DjangoObjectType):
 
 
 
-class FactInterface(Interface):
+class FactInterface(relay.Node):
+
     question = graphene.Field(QuestionNode)
 
-    # sources = DjangoFilterConnectionField(TipNode)
+    sources = DjangoFilterConnectionField(lambda: TipNode)
+
     @classmethod
     def resolve_type(cls, instance, info):
         if instance.question.input_format == formats.INT_FORMAT:
@@ -35,8 +37,8 @@ class FactInterface(Interface):
 class IntFactNode(DjangoObjectType):
     class Meta:
         model = Fact
-        fields = ("data", )
-        interfaces = (relay.Node, FactInterface,)
+        fields = ("data", "response_int")
+        interfaces = (FactInterface,)
 
     data = graphene.Int()
 
@@ -47,8 +49,8 @@ class IntFactNode(DjangoObjectType):
 class FloatFactNode(DjangoObjectType):
     class Meta:
         model = Fact
-        fields = ("data", )
-        interfaces = (relay.Node, FactInterface,)
+        fields = ("data", "response_float")
+        interfaces = (FactInterface,)
 
     data = graphene.Float()
 
@@ -59,8 +61,8 @@ class FloatFactNode(DjangoObjectType):
 class TextFactNode(DjangoObjectType):
     class Meta:
         model = Fact
-        fields = ("data", )
-        interfaces = (relay.Node, FactInterface,)
+        fields = ("data", "response_text")
+        interfaces = (FactInterface,)
 
     data = graphene.String()
 
@@ -71,8 +73,8 @@ class TextFactNode(DjangoObjectType):
 class DateFactNode(DjangoObjectType):
     class Meta:
         model = Fact
-        fields = ("data", )
-        interfaces = (relay.Node, FactInterface,)
+        fields = ("data", "response_date")
+        interfaces = (FactInterface,)
 
     data = graphene.Date()
 
@@ -267,4 +269,7 @@ schema = graphene.Schema(query=Query, types=[IntFactNode,
                                              TextFactNode,
                                              DateFactNode,
                                              FloatFactNode,
-                                             QuestionNode])
+                                             QuestionNode,
+                                             FactInterface,
+                                             TipNode,
+                                             TipStructureNode])
