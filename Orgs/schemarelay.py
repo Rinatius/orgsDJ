@@ -111,6 +111,7 @@ class FactInterfaceConnection(relay.Connection):
 class TipNode(DjangoObjectType):
     class Meta:
         model = Tip
+        fields = ['name', 'structure']
         filter_fields = ['structure']
         interfaces = (relay.Node, )
 

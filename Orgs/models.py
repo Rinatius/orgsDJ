@@ -1,4 +1,5 @@
 from django.db import models
+from __future__ import annotations
 
 # Create your models here.
 from Orgs import formats
@@ -100,7 +101,6 @@ class Fact(models.Model):
         return Tip.objects.all()
 
 
-
 class TipStructure(BasicModel):
     default_display_collection = models.ForeignKey("DisplayCollection",
                                                    on_delete=models.SET_NULL,
@@ -130,6 +130,37 @@ class TieStructure(BasicModel):
 class Tip(BasicModel, ChronoModel):
     image = models.ImageField(name="image", null=True, blank=True)
     structure = models.ForeignKey(TipStructure, on_delete=models.CASCADE)
+
+    def get_display_collection_data(self,
+                                    display_collection: DisplayCollection):
+        if display_collection is None:
+            displays = self.structure.default_display_collection.displays
+        else:
+            displays = display_collection.displays
+        display_collection_data = []
+        for display in displays:
+            display_collection_data.append(self.get_display_data(display))
+
+        return display_collection_data
+
+    def get_display_data(self, display: Display):
+        self.get_refracted_data(display.left_tie_structures,
+                                display.right_tie_structures,
+                                display.lens)
+
+    def get_refracted_data(self,
+                           left_tie_structures,
+                           right_tie_structures,
+                           lens):
+        tip_queryset = self.get_filtered_tips(left_tie_structures,
+                                              right_tie_structures)
+        return self.refract_tips(tip_queryset, lens)
+
+    def get_filtered_tips(self, left_tie_structures, right_tie_structures):
+        pass
+
+    def refract_tips(self, tip_queryset, lens):
+        pass
 
     def __str__(self):
         return self.name
